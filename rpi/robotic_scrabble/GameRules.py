@@ -35,3 +35,7 @@ class GameRules:
         return
 
     # TODO(James): Move load dictionary here
+
+    def score_word(word):
+        # placeholder
+        return
