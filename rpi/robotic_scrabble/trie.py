@@ -3,11 +3,9 @@
     All credit goes to the original author
 '''
 
-import fileinput
-import pickle
 from time import time
 
-
+# timer decorator
 def timer(func):
     def f(*args, **kwargs):
         before = time()
@@ -19,7 +17,6 @@ def timer(func):
 
 
 class TrieNode:
-
     def __init__(self):
         self.children = [None]*26
 
@@ -27,7 +24,6 @@ class TrieNode:
 
 
 class Trie:
-
     def __init__(self):
         self.root = self.get_node()
 
@@ -62,38 +58,9 @@ class Trie:
         return pCrawl != None and pCrawl.isTerminal
 
 
-# imports a dictionary from txt format and creates Trie file
-@timer
-def import_dictionary(input, output):
-    tree = Trie()
-
-    for line in fileinput.input(input):
-        tree.insert(str.strip(line))
-
-    fileinput.close()
-    if(output == ""):
-        return tree
-
-    filehandler = open(output, 'wb')
-    pickle.dump(tree, filehandler)
-    filehandler.close()
-    return tree
-
-
-# loads a dictionary from a binary file
-@timer
-def load_dictionary(file):
-    filehandler = open(file, 'rb')
-    dictionary = pickle.load(filehandler)
-    filehandler.close()
-    return dictionary
-
-
 def index_to_char(index):
     return chr(index+ord('a'))
 
 
 def char_to_index(char):
     return ord(char)-ord('a')
-
-# decorator timer

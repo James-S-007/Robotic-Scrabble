@@ -3,11 +3,9 @@
     All credit goes to the original author
 '''
 
-from trie import load_dictionary
-from trie import import_dictionary
-from trie import index_to_char
-from trie import char_to_index
-from trie import Trie
+from Trie import import_dictionary
+from Trie import index_to_char
+from Trie import char_to_index
 
 import csv
 import random
