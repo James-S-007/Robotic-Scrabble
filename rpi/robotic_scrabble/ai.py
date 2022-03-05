@@ -7,24 +7,10 @@ from Trie import import_dictionary
 from Trie import index_to_char
 from Trie import char_to_index
 
-import csv
+
 import random
 import string
 import time
-
-
-def draw(board):
-    for i in range(len(board)):
-        for j in range(len(board[0])):
-            print(board[i][j], " ", end='')
-        print()
-    print()
-
-
-def import_board(file):
-    board = list(csv.reader(
-        open(file)))
-    return board
 
 
 def get_left_limit(board, row, column):
