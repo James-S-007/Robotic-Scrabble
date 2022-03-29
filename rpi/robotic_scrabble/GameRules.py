@@ -4,7 +4,7 @@ from Trie import Trie
 
 class GameRules:
     def __init__(self, dictionary):
-        self.dictionary = dictionary
+        self.dictionary = self.import_dictionary(dictionary)
         self.letter_values = {
             "a": 1,
             "b": 3,
@@ -34,14 +34,14 @@ class GameRules:
             "z": 10,
         }
 
-    def validate_word(word):
+    def validate_word(self, word):
         # placeholder, check validity with dictionary
-        return
+        return self.dictionary.is_word(word)
 
 
     # imports a dictionary from txt format and creates Trie
     # Optionally saves serialized Trie to file for quick loading at next boot
-    def import_dictionary(dict_file, dict_outfile=None):
+    def import_dictionary(self, dict_file, dict_outfile=None):
         tree = Trie()
         with open(dict_file) as f:
             for line in f:
@@ -54,13 +54,13 @@ class GameRules:
         return tree
 
     # loads previously serialized dictionary saved in file
-    def load_dictionary(file):
+    def load_dictionary(self, file):
         with open(file, 'rb') as f:
             dictionary = pickle.load(f)
         
         return dictionary
 
 
-    def score_word(word):
+    def score_word(self, word):
         # placeholder
         return
