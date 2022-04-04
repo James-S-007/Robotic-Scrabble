@@ -14,7 +14,7 @@ from GameRules import GameRules
 def main():
     game_rules = GameRules(os.path.join(os.path.dirname(__file__), 'dictionary.txt'))
     board = Board()
-    board.import_board(os.path.join(os.path.dirname(__file__), 'board.csv'))  # TODO(James): import board.csv file
+    board.import_board(os.path.join(os.path.dirname(__file__), 'board.csv'))
     test_word_validation(game_rules)
     test_word_generation(board, game_rules)
 
@@ -29,8 +29,12 @@ def test_word_validation(game_rules):
 
 def test_word_generation(board, game_rules):
     rack = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
-    new_board = AI.make_best_move(board.board, rack, game_rules.dictionary)
-    return
+    pprint(AI.ai_make_move(board, rack, game_rules))
+    pprint(board.board)
+    rack = ['h', 'i', 'j', 'k', 'l', 'm', 'n']
+    board.import_board(os.path.join(os.path.dirname(__file__), 'board.csv'))  # reset board
+    pprint(AI.ai_make_move(board, rack, game_rules))
+    pprint(board.board)
 
 
 # Output Formatting
