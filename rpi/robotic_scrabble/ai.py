@@ -205,19 +205,18 @@ def make_best_move(board, rack, dictionary):
     return board
 
 
-def main():
-    board_file = "board.csv"
-    dictionary_file = "DictionaryENG.txt"
+# Record pieces added to board by comparing old board and previous board for AI opponent
+# return --> dict: {rack piece: location [row, col], ...}
+def record_moves(rack, prev_board, new_board):
+    moves = {}
+    for i in range(0, len(prev_board)):
+        for j in range(0, len(prev_board)):
+            if prev_board[i][j] != new_board[i][j]:
+                moves[new_board[i][j]] = [i, j]
+    
+    # verify all new letters in racks
+    for move in moves.keys():
+        if move not in rack:
+            print(f'ERR: added letter {move}, not in rack {rack}')
+    return moves
 
-    dictionary = import_dictionary(dictionary_file, "")
-    board = import_board(board_file)
-    rack = get_random_rack()
-
-    print(rack)
-    draw(board)
-    board = make_best_move(board, rack, dictionary)
-    draw(board)
-
-
-if __name__ == "__main__":
-    main()
