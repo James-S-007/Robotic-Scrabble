@@ -194,20 +194,22 @@ def make_best_move(board, rack, dictionary):
         globalMoves.append(evaluate_moves(legal_moves))
 
     columnMove = evaluate_moves(globalMoves)
-
+    word_made = ""
     if len(rowMove[0]) > len(columnMove[0]):
         board = transpose(board)
         make_move(board, rowMove)
+        word_made = rowMove[0]
     else:
         make_move(board, columnMove)
         board = transpose(board)
+        word_made = columnMove[0]
 
-    return board
+    return board, word_made
 
 
 # Record pieces added to board by comparing old board and previous board for AI opponent
 # return --> dict: {rack piece: location [row, col], ...}
-def record_moves(rack, prev_board, new_board):
+def record_moves(prev_board, new_board, rack):
     moves = {}
     for i in range(0, len(prev_board)):
         for j in range(0, len(prev_board)):
@@ -218,5 +220,20 @@ def record_moves(rack, prev_board, new_board):
     for move in moves.keys():
         if move not in rack:
             print(f'ERR: added letter {move}, not in rack {rack}')
+            return {}
     return moves
 
+# AI makes best possible move and updates board
+# returns --> dict: {
+    # "moves": dict: {letter, [row, col], ...},
+    # "word": word played,
+    # "score": score of word played }
+def ai_make_move(board, rack, game_rules):
+    ai_move = {}
+    new_board, ai_move["word"] = make_best_move(board.board, rack, game_rules.dictionary)
+    ai_move["moves"] = record_moves(board.board, new_board, rack)
+    if not ai_move["moves"]:
+        ai_move["word"] = ""  # word made not compatible with rack
+    ai_move["score"] = game_rules.score_word(ai_move["word"])
+    board.board = new_board
+    return ai_move
