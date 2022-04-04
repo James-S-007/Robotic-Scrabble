@@ -62,5 +62,7 @@ class GameRules:
 
 
     def score_word(self, word):
-        # placeholder
-        return
+        sum = 0
+        for letter in word:
+            sum += self.letter_values[letter]
+        return sum
