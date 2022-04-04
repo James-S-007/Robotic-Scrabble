@@ -5,7 +5,7 @@ import csv
 
 class Board:
     def __init__(self, n=15):
-        self.board = [[None]*n for _ in range(15)]
+        self.board = [None for _ in range(15)]
 
     # Outputs current board to terminal
     def draw(self):
@@ -21,6 +21,6 @@ class Board:
         self.board = list(csv.reader(open(file)))
 
 
-board = Board()
-board.draw()
+# board = Board()
+# board.draw()
 
