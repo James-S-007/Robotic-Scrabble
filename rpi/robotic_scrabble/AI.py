@@ -10,230 +10,235 @@ import random
 import string
 import time
 
+class AI:
 
-def get_left_limit(board, row, column):
-    if column == 0:
-        return 0
+    def __init__(self):
+        self.rack=[None]*7
+        self.score = 0
 
-    for i in range(0, column + 1):
-        if board[row][column-i-1] != "-":
-            if i == 1 and column - i - 2 > 0:
-                return 0
-            return i-1
+    def get_left_limit(self, board, row, column):
+        if column == 0:
+            return 0
 
-    return i
+        for i in range(0, column + 1):
+            if board[row][column-i-1] != "-":
+                if i == 1 and column - i - 2 > 0:
+                    return 0
+                return i-1
 
-
-def transpose(array):
-    return list(map(list, zip(*array)))
-
-
-def intersection(lst1, lst2):
-    if len(lst2) == 0:
-        return ['!']
-
-    if len(lst1) == 0:
-        return lst2
-
-    if lst1 == ['!'] or lst2 == ['!']:
-        return ['!']
-
-    temp = set(lst2)
-    lst3 = [value for value in lst1 if value in temp]
-    return lst3
+        return i
 
 
-def get_cross_checks(board, dictionary):
-    cross_checks = [[[]for i in range(15)]for j in range(15)]
-    for i in range(len(board)):
-        for j in range(len(board[0])):
-
-            # check on top of the word
-            if i + 1 < 15 and board[i][j] == '-' and board[i+1][j] != '-':
-                letters = []
-                k = i+1
-                word = ""
-                while k < 15 and board[k][j] != "-":
-                    word += board[k][j]
-                    k += 1
-                if len(word) > 0:
-                    for letter in range(26):
-                        newWord = index_to_char(letter)+word
-                        if dictionary.is_word(newWord) == True:
-                            letters += index_to_char(letter)
-
-                    cross_checks[i][j] = intersection(cross_checks[i][j], letters)
-
-            # check at the bottom of the word
-            if i-1 > -1 and board[i][j] == '-' and board[i-1][j] != '-':
-                letters = []
-                k = i-1
-                word = ""
-                while k > -1 and board[k][j] != "-":
-                    word += board[k][j]
-                    k -= 1
-                if len(word) > 0:
-                    word = word[::-1]
-                    for letter in range(26):
-                        newWord = word+index_to_char(letter)
-                        if dictionary.is_word(newWord) == True:
-                            letters += index_to_char(letter)
-
-                    cross_checks[i][j] = intersection(cross_checks[i][j], letters)
-
-    return cross_checks
+    def transpose(self, array):
+        return list(map(list, zip(*array)))
 
 
-def get_anchors(board, dictionary):
-    # anchor is [row,column]
-    anchors = []
-    for i in range(len(board)):
-        for j in range(len(board[0])):
-            if board[i][j] != '-':
-                if j+1 < 15 and board[i][j+1] == '-':
-                    anchors.append([i, j+1])
-                if j-1 > 0 and board[i][j-1] == '-':
-                    anchors.append([i, j-1])
+    def intersection(self, lst1, lst2):
+        if len(lst2) == 0:
+            return ['!']
 
-                if i+1 < 15 and board[i+1][j] == '-':
-                    anchors.append([i+1, j])
-                if i-1 > 0 and board[i-1][j] == '-':
-                    anchors.append([i-1, j])
-    return anchors
+        if len(lst1) == 0:
+            return lst2
+
+        if lst1 == ['!'] or lst2 == ['!']:
+            return ['!']
+
+        temp = set(lst2)
+        lst3 = [value for value in lst1 if value in temp]
+        return lst3
 
 
-def extend_right(partial_word, node, square_row, square_column, legal_moves, rack, cross_checks, board):
-    if square_column < 15 and square_row < 15:
-        if board[square_row][square_column] == '-':
-            if node.isTerminal == True:
+    def get_cross_checks(self, board, dictionary):
+        cross_checks = [[[]for i in range(15)]for j in range(15)]
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+
+                # check on top of the word
+                if i + 1 < 15 and board[i][j] == '-' and board[i+1][j] != '-':
+                    letters = []
+                    k = i+1
+                    word = ""
+                    while k < 15 and board[k][j] != "-":
+                        word += board[k][j]
+                        k += 1
+                    if len(word) > 0:
+                        for letter in range(26):
+                            newWord = index_to_char(letter)+word
+                            if dictionary.is_word(newWord) == True:
+                                letters += index_to_char(letter)
+
+                        cross_checks[i][j] = self.intersection(cross_checks[i][j], letters)
+
+                # check at the bottom of the word
+                if i-1 > -1 and board[i][j] == '-' and board[i-1][j] != '-':
+                    letters = []
+                    k = i-1
+                    word = ""
+                    while k > -1 and board[k][j] != "-":
+                        word += board[k][j]
+                        k -= 1
+                    if len(word) > 0:
+                        word = word[::-1]
+                        for letter in range(26):
+                            newWord = word+index_to_char(letter)
+                            if dictionary.is_word(newWord) == True:
+                                letters += index_to_char(letter)
+
+                        cross_checks[i][j] = self.intersection(cross_checks[i][j], letters)
+
+        return cross_checks
+
+
+    def get_anchors(self, board, dictionary):
+        # anchor is [row,column]
+        anchors = []
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if board[i][j] != '-':
+                    if j+1 < 15 and board[i][j+1] == '-':
+                        anchors.append([i, j+1])
+                    if j-1 > 0 and board[i][j-1] == '-':
+                        anchors.append([i, j-1])
+
+                    if i+1 < 15 and board[i+1][j] == '-':
+                        anchors.append([i+1, j])
+                    if i-1 > 0 and board[i-1][j] == '-':
+                        anchors.append([i-1, j])
+        return anchors
+
+
+    def extend_right(self, partial_word, node, square_row, square_column, legal_moves, cross_checks, board):
+        if square_column < 15 and square_row < 15:
+            if board[square_row][square_column] == '-':
+                if node.isTerminal == True:
+                    legal_moves.append([partial_word, square_row, square_column])
+                for childIndex in range(26):
+                    if node.children[childIndex] != None:
+                        if index_to_char(childIndex) in self.rack:
+                            if (cross_checks[square_row][square_column] == [] or (index_to_char(childIndex) in cross_checks[square_row][square_column])):
+                                self.rack.remove(index_to_char(childIndex))
+                                self.extend_right(partial_word+index_to_char(childIndex),
+                                            node.children[childIndex], square_row, square_column+1, legal_moves, cross_checks, board)
+                                self.rack.append(index_to_char(childIndex))
+            else:
+                if node.children[char_to_index(board[square_row][square_column])] != None:
+                    self.extend_right(partial_word+board[square_row][square_column],
+                                node.children[char_to_index(board[square_row][square_column])], square_row, square_column+1, legal_moves, cross_checks, board)
+        elif square_column == 16 or square_row == 16:
+            if node.isTerminal:
                 legal_moves.append([partial_word, square_row, square_column])
-            for childIndex in range(26):
-                if node.children[childIndex] != None:
-                    if index_to_char(childIndex) in rack:
-                        if (cross_checks[square_row][square_column] == [] or (index_to_char(childIndex) in cross_checks[square_row][square_column])):
-                            rack.remove(index_to_char(childIndex))
-                            extend_right(partial_word+index_to_char(childIndex),
-                                         node.children[childIndex], square_row, square_column+1, legal_moves, rack, cross_checks, board)
-                            rack.append(index_to_char(childIndex))
+
+
+    def left_part(self, partial_word, node, limit, square_row, square_column, legal_moves, cross_checks, board):
+        if limit >= 0:
+            self.extend_right(partial_word, node, square_row,
+                        square_column, legal_moves, cross_checks, board)
+
+            if limit > 0:
+                for childIndex in range(26):
+                    if node.children[childIndex] != None:
+                        if index_to_char(childIndex) in self.rack:
+                            self.rack.remove(index_to_char(childIndex))
+                            self.left_part(partial_word+index_to_char(childIndex),
+                                    node.children[childIndex], limit-1, square_row, square_column, legal_moves, cross_checks, board)
+                            self.rack.append(index_to_char(childIndex))
+
+
+    def get_random_rack(self):
+        self.rack = []
+        for i in range(8):
+            self.rack.append(random.choice(string.ascii_lowercase))
+
+
+    def evaluate_moves(self, moves):
+        if len(moves) == 0:
+            return []
+        longest = moves[0]
+        for item in moves:
+            if item == []:
+                continue
+            if longest == [] or len(item[0]) > len(longest[0]):
+                longest = item
+
+        return longest
+
+
+    def make_move(self, board, move):
+        word = move[0]
+        length = len(word)
+        for i in range(length):
+            board[move[1]][move[2]-1-i] = word[length-i-1]
+            word = word[:-1]
+        return
+
+
+    def make_best_move(self, board, dictionary):
+        # row moves
+        anchors = self.get_anchors(board, dictionary)
+        cross_checks = self.get_cross_checks(board, dictionary)
+        globalMoves = []
+
+        for item in anchors:
+            legal_moves = []
+            self.left_part("", dictionary.root, self.get_left_limit(board, item[0], item[1]),
+                    item[0], item[1], legal_moves, cross_checks, board)
+            globalMoves.append(self.evaluate_moves(legal_moves))
+
+        rowMove = self.evaluate_moves(globalMoves)
+
+        # transposed - column moves
+        board = self.transpose(board)
+        cross_checks = self.get_cross_checks(board, dictionary)
+        globalMoves = []
+
+        for item in anchors:
+            legal_moves = []
+            self.left_part("", dictionary.root, self.get_left_limit(board, item[1], item[0]),
+                    item[1], item[0], legal_moves, cross_checks, board)
+            globalMoves.append(self.evaluate_moves(legal_moves))
+
+        columnMove = self.evaluate_moves(globalMoves)
+        word_made = ""
+        if len(rowMove[0]) > len(columnMove[0]):
+            board = self.transpose(board)
+            self.make_move(board, rowMove)
+            word_made = rowMove[0]
         else:
-            if node.children[char_to_index(board[square_row][square_column])] != None:
-                extend_right(partial_word+board[square_row][square_column],
-                             node.children[char_to_index(board[square_row][square_column])], square_row, square_column+1, legal_moves, rack, cross_checks, board)
-    elif square_column == 16 or square_row == 16:
-        if node.isTerminal:
-            legal_moves.append([partial_word, square_row, square_column])
+            self.make_move(board, columnMove)
+            board = self.transpose(board)
+            word_made = columnMove[0]
+
+        return board, word_made
 
 
-def left_part(partial_word, node, limit, square_row, square_column, legal_moves, rack, cross_checks, board):
-    if limit >= 0:
-        extend_right(partial_word, node, square_row,
-                     square_column, legal_moves, rack, cross_checks, board)
+    # Record pieces added to board by comparing old board and previous board for AI opponent
+    # return --> dict: {rack piece: location [row, col], ...}
+    def record_moves(self, prev_board, new_board):
+        moves = {}
+        for i in range(0, len(prev_board)):
+            for j in range(0, len(prev_board)):
+                if prev_board[i][j] != new_board[i][j]:
+                    moves[new_board[i][j]] = [i, j]
+        
+        # verify all new letters in racks
+        for move in moves.keys():
+            if move not in self.rack:
+                print(f'ERR: added letter {move}, not in rack {self.rack}')
+                return {}
+        return moves
 
-        if limit > 0:
-            for childIndex in range(26):
-                if node.children[childIndex] != None:
-                    if index_to_char(childIndex) in rack:
-                        rack.remove(index_to_char(childIndex))
-                        left_part(partial_word+index_to_char(childIndex),
-                                  node.children[childIndex], limit-1, square_row, square_column, legal_moves, rack, cross_checks, board)
-                        rack.append(index_to_char(childIndex))
-
-
-def get_random_rack():
-    rack = []
-    for i in range(8):
-        rack.append(random.choice(string.ascii_lowercase))
-    return rack
-
-
-def evaluate_moves(moves):
-    if len(moves) == 0:
-        return []
-    longest = moves[0]
-    for item in moves:
-        if item == []:
-            continue
-        if longest == [] or len(item[0]) > len(longest[0]):
-            longest = item
-
-    return longest
-
-
-def make_move(board, move):
-    word = move[0]
-    length = len(word)
-    for i in range(length):
-        board[move[1]][move[2]-1-i] = word[length-i-1]
-        word = word[:-1]
-    return
-
-
-def make_best_move(board, rack, dictionary):
-    # row moves
-    anchors = get_anchors(board, dictionary)
-    cross_checks = get_cross_checks(board, dictionary)
-    globalMoves = []
-
-    for item in anchors:
-        legal_moves = []
-        left_part("", dictionary.root, get_left_limit(board, item[0], item[1]),
-                  item[0], item[1], legal_moves, rack, cross_checks, board)
-        globalMoves.append(evaluate_moves(legal_moves))
-
-    rowMove = evaluate_moves(globalMoves)
-
-    # transposed - column moves
-    board = transpose(board)
-    cross_checks = get_cross_checks(board, dictionary)
-    globalMoves = []
-
-    for item in anchors:
-        legal_moves = []
-        left_part("", dictionary.root, get_left_limit(board, item[1], item[0]),
-                  item[1], item[0], legal_moves, rack, cross_checks, board)
-        globalMoves.append(evaluate_moves(legal_moves))
-
-    columnMove = evaluate_moves(globalMoves)
-    word_made = ""
-    if len(rowMove[0]) > len(columnMove[0]):
-        board = transpose(board)
-        make_move(board, rowMove)
-        word_made = rowMove[0]
-    else:
-        make_move(board, columnMove)
-        board = transpose(board)
-        word_made = columnMove[0]
-
-    return board, word_made
-
-
-# Record pieces added to board by comparing old board and previous board for AI opponent
-# return --> dict: {rack piece: location [row, col], ...}
-def record_moves(prev_board, new_board, rack):
-    moves = {}
-    for i in range(0, len(prev_board)):
-        for j in range(0, len(prev_board)):
-            if prev_board[i][j] != new_board[i][j]:
-                moves[new_board[i][j]] = [i, j]
-    
-    # verify all new letters in racks
-    for move in moves.keys():
-        if move not in rack:
-            print(f'ERR: added letter {move}, not in rack {rack}')
-            return {}
-    return moves
-
-# AI makes best possible move and updates board
-# returns --> dict: {
-    # "moves": dict: {letter, [row, col], ...},
-    # "word": word played,
-    # "score": score of word played }
-def ai_make_move(board, rack, game_rules):
-    ai_move = {}
-    new_board, ai_move["word"] = make_best_move(board.board, rack, game_rules.dictionary)
-    ai_move["moves"] = record_moves(board.board, new_board, rack)
-    if not ai_move["moves"]:
-        ai_move["word"] = ""  # word made not compatible with rack
-    ai_move["score"] = game_rules.score_word(ai_move["word"])
-    board.board = new_board
-    return ai_move
+    # AI makes best possible move and updates board
+    # returns --> dict: {
+        # "moves": dict: {letter, [row, col], ...},
+        # "word": word played,
+        # "score": score of word played }
+    def ai_make_move(self, board, game_rules):
+        ai_move = {}
+        new_board, ai_move["word"] = self.make_best_move(board.board, game_rules.dictionary)
+        ai_move["moves"] = self.record_moves(board.board, new_board)
+        if not ai_move["moves"]:
+            ai_move["word"] = ""  # word made not compatible with rack
+        ai_move["score"] = game_rules.score_word(ai_move["word"])
+        board.board = new_board
+        # TODO(James): update rack
+        return ai_move

@@ -1,7 +1,7 @@
 import os.path
 from pprint import pprint
 
-import ai as AI
+from AI import AI
 from Board import Board
 from GameRules import GameRules
 
@@ -28,12 +28,13 @@ def test_word_validation(game_rules):
     output_format(game_rules.validate_word('cup'), True)
 
 def test_word_generation(board, game_rules):
-    rack = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
-    pprint(AI.ai_make_move(board, rack, game_rules))
+    ai = AI()
+    ai.rack = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+    pprint(ai.ai_make_move(board, game_rules))
     pprint(board.board)
-    rack = ['h', 'i', 'j', 'k', 'l', 'm', 'n']
+    ai.rack = ['h', 'i', 'j', 'k', 'l', 'm', 'n']
     board.import_board(os.path.join(os.path.dirname(__file__), 'board.csv'))  # reset board
-    pprint(AI.ai_make_move(board, rack, game_rules))
+    pprint(ai.ai_make_move(board, game_rules))
     pprint(board.board)
 
 
