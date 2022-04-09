@@ -107,41 +107,41 @@ class AI:
         return anchors
 
 
-    def extend_right(self, partial_word, node, square_row, square_column, legal_moves, cross_checks, board):
+    def extend_right(self, partial_word, node, square_row, square_column, legal_moves, cross_checks, board, temp_rack):
         if square_column < 15 and square_row < 15:
             if board[square_row][square_column] == '-':
                 if node.isTerminal == True:
                     legal_moves.append([partial_word, square_row, square_column])
                 for childIndex in range(26):
                     if node.children[childIndex] != None:
-                        if index_to_char(childIndex) in self.rack:
+                        if index_to_char(childIndex) in temp_rack:
                             if (cross_checks[square_row][square_column] == [] or (index_to_char(childIndex) in cross_checks[square_row][square_column])):
-                                self.rack.remove(index_to_char(childIndex))
+                                temp_rack.remove(index_to_char(childIndex))
                                 self.extend_right(partial_word+index_to_char(childIndex),
-                                            node.children[childIndex], square_row, square_column+1, legal_moves, cross_checks, board)
-                                self.rack.append(index_to_char(childIndex))
+                                            node.children[childIndex], square_row, square_column+1, legal_moves, cross_checks, board, temp_rack)
+                                temp_rack.append(index_to_char(childIndex))
             else:
                 if node.children[char_to_index(board[square_row][square_column])] != None:
                     self.extend_right(partial_word+board[square_row][square_column],
-                                node.children[char_to_index(board[square_row][square_column])], square_row, square_column+1, legal_moves, cross_checks, board)
+                                node.children[char_to_index(board[square_row][square_column])], square_row, square_column+1, legal_moves, cross_checks, board, temp_rack)
         elif square_column == 16 or square_row == 16:
             if node.isTerminal:
                 legal_moves.append([partial_word, square_row, square_column])
 
 
-    def left_part(self, partial_word, node, limit, square_row, square_column, legal_moves, cross_checks, board):
+    def left_part(self, partial_word, node, limit, square_row, square_column, legal_moves, cross_checks, board, temp_rack):
         if limit >= 0:
             self.extend_right(partial_word, node, square_row,
-                        square_column, legal_moves, cross_checks, board)
+                        square_column, legal_moves, cross_checks, board, temp_rack)
 
             if limit > 0:
                 for childIndex in range(26):
                     if node.children[childIndex] != None:
-                        if index_to_char(childIndex) in self.rack:
-                            self.rack.remove(index_to_char(childIndex))
+                        if index_to_char(childIndex) in temp_rack:
+                            temp_rack.remove(index_to_char(childIndex))
                             self.left_part(partial_word+index_to_char(childIndex),
-                                    node.children[childIndex], limit-1, square_row, square_column, legal_moves, cross_checks, board)
-                            self.rack.append(index_to_char(childIndex))
+                                    node.children[childIndex], limit-1, square_row, square_column, legal_moves, cross_checks, board, temp_rack)
+                            temp_rack.append(index_to_char(childIndex))
 
 
     def get_random_rack(self):
@@ -174,6 +174,7 @@ class AI:
 
     def make_best_move(self, board, dictionary):
         # row moves
+        temp_rack = self.rack.copy()  # will be modified throughout, need copy to pass
         anchors = self.get_anchors(board, dictionary)
         cross_checks = self.get_cross_checks(board, dictionary)
         globalMoves = []
@@ -181,7 +182,7 @@ class AI:
         for item in anchors:
             legal_moves = []
             self.left_part("", dictionary.root, self.get_left_limit(board, item[0], item[1]),
-                    item[0], item[1], legal_moves, cross_checks, board)
+                    item[0], item[1], legal_moves, cross_checks, board, temp_rack)
             globalMoves.append(self.evaluate_moves(legal_moves))
 
         rowMove = self.evaluate_moves(globalMoves)
@@ -194,7 +195,7 @@ class AI:
         for item in anchors:
             legal_moves = []
             self.left_part("", dictionary.root, self.get_left_limit(board, item[1], item[0]),
-                    item[1], item[0], legal_moves, cross_checks, board)
+                    item[1], item[0], legal_moves, cross_checks, board, temp_rack)
             globalMoves.append(self.evaluate_moves(legal_moves))
 
         columnMove = self.evaluate_moves(globalMoves)
@@ -241,6 +242,18 @@ class AI:
         ai_move["score"] = game_rules.score_word(ai_move["word"])
         board.board = new_board
         return ai_move
+
+    # Converts dict of moves to be made from letters to index in the rack
+        # Input moves: dict: {letter: [board row, board col], ...}
+        # returns --> dict: {rack_idx: [board row, board col], ...}
+    def letters_to_rack_idx(self, moves):
+        positional_moves = {}
+        temp_rack = self.rack.copy()
+        for letter, board_moves in moves.items():
+            rack_idx = temp_rack.index(letter)
+            temp_rack[rack_idx] = None  # mark letter as taken
+            positional_moves[rack_idx] = board_moves
+        return positional_moves
 
     # new_pieces: {rack_idx: letter, rack_idx: letter, ...}
     def update_state(self, new_pieces, word_score):

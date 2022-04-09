@@ -35,7 +35,6 @@ class GameRules:
         }
 
     def validate_word(self, word):
-        # placeholder, check validity with dictionary
         return self.dictionary.is_word(word)
 
 
