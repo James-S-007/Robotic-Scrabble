@@ -240,5 +240,10 @@ class AI:
             ai_move["word"] = ""  # word made not compatible with rack
         ai_move["score"] = game_rules.score_word(ai_move["word"])
         board.board = new_board
-        # TODO(James): update rack
         return ai_move
+
+    # new_pieces: {rack_idx: letter, rack_idx: letter, ...}
+    def update_state(self, new_pieces, word_score):
+        for idx, letter in new_pieces.items():
+            self.rack[idx] = letter
+        self.score += word_score
