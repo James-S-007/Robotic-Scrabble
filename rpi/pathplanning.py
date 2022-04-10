@@ -8,6 +8,11 @@
     # modify maze to be compatible with Board class
     # function to find easiest start depending on player
 
+import os.path
+from pprint import pprint
+
+from robotic_scrabble.Board import Board
+
 
 class Node():
     """A node class for A* Pathfinding"""
@@ -24,8 +29,8 @@ class Node():
         return self.position == other.position
 
 
-def astar(maze, start, end):
-    """Returns a list of tuples as a path from the given start to the given end in the given maze"""
+def astar(board, start, end):
+    """Returns a list of tuples as a path from the given start to the given end in the given board"""
 
     # Create start and end node
     start_node = Node(None, start)
@@ -66,17 +71,17 @@ def astar(maze, start, end):
 
         # Generate children
         children = []
-        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1)]: # Adjacent squares
+        for new_position in [(0, -1), (0, 1), (-1, 0), (1, 0)]: # Adjacent squares
 
             # Get node position
             node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
 
             # Make sure within range
-            if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) -1) or node_position[1] < 0:
+            if node_position[0] > (len(board.board) - 1) or node_position[0] < 0 or node_position[1] > (len(board.board[len(board.board)-1]) -1) or node_position[1] < 0:
                 continue
 
             # Make sure walkable terrain
-            if maze[node_position[0]][node_position[1]] != 0:
+            if board.board[node_position[0]][node_position[1]] != '-':
                 continue
 
             # Create new node
@@ -107,25 +112,32 @@ def astar(maze, start, end):
             open_list.append(child)
 
 
+# Reduces path from every point to manhattan
+def simplify_path(path):
+    if len(path) <= 2:
+        return path  # start and end node
+    simplified_path = []
+    simplified_path.append(path[0])
+    curr_path_axis = 0 if path[0][0] == path[0][0] else 1  # 0 if traveling along x-axis, 1 if traveling along y-axis
+    for i in range(1, len(path) - 1):
+        if path[i+1][curr_path_axis] == path[i][curr_path_axis]:
+            continue
+        simplified_path.append(path[i])
+        curr_path_axis = 1 - curr_path_axis  # toggle axis travling
+    simplified_path.append(path[-1])  # add end node
+    return simplified_path
+
+
+# TODO(James): Add functions to compute from rack to position on board
+
 def main():
-
-    maze = [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
-    start = (0, 0)
-    end = (7, 6)
-
-    path = astar(maze, start, end)
-    print(path)
-
+    board = Board()
+    board.import_board(os.path.join(os.path.dirname(__file__), 'robotic_scrabble', 'board.csv'))
+    print('Current Board')
+    pprint(board.board)
+    path = astar(board, (0, 0), (4, 7))
+    print(f'Complete Path: {path}')
+    print(f'Simplified Path: {simplify_path(path)}')
 
 if __name__ == '__main__':
     main()
