@@ -76,6 +76,14 @@ def read_all_sensors(hall_effect_arr):
         for j in range(0, len(hall_effects)):
             hall_effect_arr[j][i] = GPIO.input(hall_effects[j])
 
+def check_new_sensors(prev_hall_effect_arr):
+    new_sensors = []
+    for i in range(0, len(hall_effects)):
+        select_hall_effect(i)
+        for j in range(0, len(hall_effects)):
+            if GPIO.input(hall_effects[j]) != prev_hall_effect_arr[j][i]:
+                new_sensors.append([j, i])
+    return new_sensors
 
 def get_tile_indices(hall_effect_arr):
     return [(ix,iy) for ix, row in enumerate(hall_effect_arr) for iy, i in enumerate(row) if i == 0]
