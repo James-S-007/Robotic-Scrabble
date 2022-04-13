@@ -1,23 +1,27 @@
 from pyzbar import pyzbar
 import cv2
 
-def decode(image):
-    # decodes all barcodes from an image
-    decoded_objects = pyzbar.decode(image)
-    for obj in decoded_objects:
-        # return letter barcode found
-        return(obj.data)
+class Camera:
+    def __init__(self, cam_num):
+        self.cam_num = cam_num
+        self.cap = cv2.VideoCapture(cam_num)
+        if not self.cap.isOpened():
+            print('Err: Cannot Open Camera')
+            self.valid = False
+        else:
+            self.valid = True
 
-def checkLetter(camNum, check):
-    cap = cv2.VideoCapture(camNum)
-    if not cap.isOpened():
-        print("Cannot open camera")
-        exit()
-    while check:
-        # Capture frame-by-frame
-        ret, frame = cap.read()
-        # decode barcode
-        frame = decode(frame)
-    # When everything done, release the capture
-    cap.release()
-    cv2.destroyAllWindows()
+    def __del__(self):
+        self.cap.release()
+        cv2.destroyAllWindows()  
+
+    def decode(self, image):
+        # decodes all barcodes from an image
+        decoded_objects = pyzbar.decode(image)
+        for obj in decoded_objects:
+            # return letter barcode found
+            return(obj.data)
+
+    def check_letter(self):
+        ret, frame = self.cap.read()
+        return self.decode(frame)
