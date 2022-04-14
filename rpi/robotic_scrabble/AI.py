@@ -5,7 +5,6 @@
 
 from Trie import index_to_char, char_to_index
 
-
 import random
 import string
 import time
