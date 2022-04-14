@@ -79,6 +79,20 @@ class Human:
 
 
     # records move being made, scores word and updates board
+    # returns --> False if word placed invalid, True if successful turn
     def make_move(self, board, game_rules, end_turn_pb, cam):
         move = self.record_move(board, end_turn_pb, cam)
         words_played = self.find_words_played(self, board, move)
+        turn_score = 0
+        for _, word in words_played.items():
+            if game_rules.validate_word(word):
+                turn_score += game_rules.score_word(word)
+            else:
+                print(f'Err: {word} is not a valid word. Please remove all pieces placed this turn and try again')
+                return False
+        # update board for real this time
+        for letter, location in move.items():
+            board.board[location[0]][location[1]] = letter
+        self.score += turn_score
+        return True
+        # TODO(James): where to put distribute pieces?
