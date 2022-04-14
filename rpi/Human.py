@@ -2,7 +2,8 @@
 
 '''
 
-import RPi.GPIO
+# import RPi.GPIO
+from copy import deepcopy
 from time import sleep
 
 import halleffect
@@ -16,7 +17,7 @@ class Human:
     # records where human player places letters
     def record_move(self, board, end_turn_pb, cam):
         move = {}
-        hall_effect_arr = board.board.copy()
+        hall_effect_arr = deepcopy(board.board)
         prev_letter = curr_letter = None
         while not GPIO.input(end_turn_pb):
             prev_letter = curr_letter
@@ -40,7 +41,7 @@ class Human:
         return move
 
     def find_words_played(self, board, move):
-        temp_board = board.board.copy()
+        temp_board = deepcopy(board.board)
         words = {}  # dict: {(root_x, root_y, axis (0 or 1)): word, ...}
         for letter, location in move.items():
             temp_board[location[0]][location[1]] = letter  # update temp board (need old in case move invalid)
@@ -54,6 +55,8 @@ class Human:
 
         
     def find_word(self, location, axis, board_arr):
+        if location[0] < 0 or location[0] > 14 or location[1] < 0 or location[1] > 14 or board_arr[location[0]][location[1]] == '-':
+            return None, None
         const_idx = location[axis]
         curr_idx = location[1 - axis]
         word = ''
@@ -66,18 +69,16 @@ class Human:
                 word += board_arr[const_idx][curr_idx]
                 curr_idx += 1
         elif axis == 1:
-            while curr_idx > 0 and board_arr[curr_idx][const_idx] != '-':
+            while curr_idx > 0 and board_arr[curr_idx - 1][const_idx] != '-':
                 curr_idx -= 1
             root = (curr_idx, const_idx, axis)
             while curr_idx <= 14 and board_arr[curr_idx][const_idx] != '-':
                 word += board_arr[curr_idx][const_idx]
                 curr_idx += 1
         return root, word
-        
 
 
     # records move being made, scores word and updates board
     def make_move(self, board, game_rules, end_turn_pb, cam):
         move = self.record_move(board, end_turn_pb, cam)
-        # figure out word played
-        
+        words_played = self.find_words_played(self, board, move)
