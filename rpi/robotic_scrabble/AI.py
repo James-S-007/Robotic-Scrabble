@@ -4,6 +4,12 @@
 '''
 
 from Trie import index_to_char, char_to_index
+
+import os.path
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+print(os.path.dirname(os.path.dirname(__file__)))
+
 from vision import Camera
 
 import random
@@ -163,7 +169,7 @@ class AI:
         return longest
 
 
-    def make_move(self, board, move):
+    def make_word(self, board, move):
         word = move[0]
         length = len(word)
         for i in range(length):
@@ -172,7 +178,7 @@ class AI:
         return
 
 
-    def make_best_move(self, board, dictionary):
+    def make_best_word(self, board, dictionary):
         # row moves
         temp_rack = self.rack.copy()  # will be modified throughout, need copy to pass
         anchors = self.get_anchors(board, dictionary)
@@ -202,10 +208,10 @@ class AI:
         word_made = ""
         if len(rowMove[0]) > len(columnMove[0]):
             board = self.transpose(board)
-            self.make_move(board, rowMove)
+            self.make_word(board, rowMove)
             word_made = rowMove[0]
         else:
-            self.make_move(board, columnMove)
+            self.make_word(board, columnMove)
             board = self.transpose(board)
             word_made = columnMove[0]
 
@@ -233,9 +239,9 @@ class AI:
         # "moves": dict: {letter, [row, col], ...},
         # "word": word played,
         # "score": score of word played }
-    def ai_make_move(self, board, game_rules):
+    def make_move(self, board, game_rules):
         ai_move = {}
-        new_board, ai_move["word"] = self.make_best_move(board.board, game_rules.dictionary)
+        new_board, ai_move["word"] = self.make_best_word(board.board, game_rules.dictionary)
         ai_move["moves"] = self.record_moves(board.board, new_board)
         if not ai_move["moves"]:
             ai_move["word"] = ""  # word made not compatible with rack
