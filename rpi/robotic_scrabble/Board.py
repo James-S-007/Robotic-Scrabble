@@ -7,7 +7,7 @@ import csv
 
 class Board:
     def __init__(self, n=15):
-        self.board = ['-' for _ in range(15)]
+        self.board = [['-' for _ in range(n)] for _ in range(n)]
 
     # Outputs current board to terminal
     def draw(self):
