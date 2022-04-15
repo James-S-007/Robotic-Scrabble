@@ -1,5 +1,7 @@
 '''
-
+    Board class for Scrabble
+        Defaults to 15x15
+        Empty tiles denoted by '-'
 '''
 import csv
 

@@ -8,7 +8,6 @@ from Trie import index_to_char, char_to_index
 import os.path
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-print(os.path.dirname(os.path.dirname(__file__)))
 
 from vision import Camera
 
@@ -239,7 +238,7 @@ class AI:
         # "moves": dict: {letter, [row, col], ...},
         # "word": word played,
         # "score": score of word played }
-    def make_move(self, board, game_rules):
+    def generate_move(self, board, game_rules):
         ai_move = {}
         new_board, ai_move["word"] = self.make_best_word(board.board, game_rules.dictionary)
         ai_move["moves"] = self.record_moves(board.board, new_board)

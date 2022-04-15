@@ -30,7 +30,7 @@ def test_word_validation(game_rules):
 def test_word_generation(board, game_rules):
     ai = AI()
     ai.rack = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
-    move = ai.make_move(board, game_rules)
+    move = ai.generate_move(board, game_rules)
     print('AI Move:')
     pprint(move)
     output_format(ai.rack, ['a', 'b', 'c', 'd', 'e', 'f', 'g'])
@@ -40,7 +40,7 @@ def test_word_generation(board, game_rules):
     output_format(ai.rack, ['h', 'i', 'j', 'k', 'l', 'm', 'n'])
     pprint(f'New Rack: {ai.rack}, New Score: {ai.score}')
     board.import_board(os.path.join(os.path.dirname(__file__), 'board.csv'))  # reset board
-    move = ai.make_move(board, game_rules)
+    move = ai.generate_move(board, game_rules)
     print('AI Move:')
     pprint(move)
     print('New board:')

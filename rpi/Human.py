@@ -97,4 +97,3 @@ class Human:
             board.board[location[0]][location[1]] = letter
         self.score += turn_score
         return True
-        # TODO(James): where to put distribute pieces?
