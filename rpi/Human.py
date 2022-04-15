@@ -5,17 +5,19 @@
 # import RPi.GPIO
 from copy import deepcopy
 from time import sleep
+from vision import Camera
 
 import halleffect
 
 class Human:
 
-    def __init__(self):
+    def __init__(self, cam_num=1):
         self.rack = [None]*7
         self.score = 0
+        self.camera = Camera.Camera(cam_num)
 
     # records where human player places letters
-    def record_move(self, board, end_turn_pb, cam):
+    def record_move(self, board, end_turn_pb):
         move = {}
         hall_effect_arr = deepcopy(board.board)
         prev_letter = curr_letter = None
@@ -23,7 +25,7 @@ class Human:
             prev_letter = curr_letter
             curr_letter = None
             while not curr_letter:
-                curr_letter = cam.check_letter()
+                curr_letter = self.camera.check_letter()
                 sleep(.05)
             if move:   # not first turn, check where prev letter was placed
                 new_sensors = halleffect.check_new_sensors(hall_effect_arr)
@@ -80,8 +82,8 @@ class Human:
 
     # records move being made, scores word and updates board
     # returns --> False if word placed invalid, True if successful turn
-    def make_move(self, board, game_rules, end_turn_pb, cam):
-        move = self.record_move(board, end_turn_pb, cam)
+    def make_move(self, board, game_rules, end_turn_pb):
+        move = self.record_move(board, end_turn_pb)
         words_played = self.find_words_played(self, board, move)
         turn_score = 0
         for _, word in words_played.items():

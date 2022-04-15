@@ -4,16 +4,17 @@
 '''
 
 from Trie import index_to_char, char_to_index
+from vision import Camera
 
 import random
 import string
-import time
 
 class AI:
 
-    def __init__(self):
+    def __init__(self, cam_num=2):
         self.rack=[None]*7
         self.score = 0
+        self.camera = Camera.Camera(cam_num)
 
     def get_left_limit(self, board, row, column):
         if column == 0:

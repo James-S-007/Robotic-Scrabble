@@ -19,8 +19,3 @@ class Board:
     # Empty tiles in file are denoted by '-'
     def import_board(self, file):
         self.board = list(csv.reader(open(file)))
-
-
-# board = Board()
-# board.draw()
-

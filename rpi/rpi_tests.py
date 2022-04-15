@@ -4,7 +4,7 @@ from Human import Human
 from robotic_scrabble.Board import Board
 
 def main():
-    return
+    test_word_validation()
 
 
 def test_word_validation():
@@ -25,4 +25,3 @@ def test_word_validation():
 
 if __name__ == '__main__':
     main()
-    test_word_validation()
