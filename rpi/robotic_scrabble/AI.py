@@ -13,6 +13,7 @@ from vision import Camera
 
 import random
 import string
+from time import sleep
 
 class AI:
 
@@ -265,3 +266,11 @@ class AI:
         for idx, letter in new_pieces.items():
             self.rack[idx] = letter
         self.score += word_score
+
+    def record_letter(self, rack_idx):
+        curr_letter = None
+        while not curr_letter:
+            curr_letter = self.camera.check_letter()
+            sleep(.05)
+        self.rack[rack_idx] = curr_letter
+        return True
