@@ -1,37 +1,37 @@
-import RPi.GPIO
+# import RPi.GPIO
 
 # https://sourceforge.net/p/raspberry-gpio-python/wiki/BasicUsage/
 
 # mux select pins, DCBA
-mux_selectA = 
-mux_selectB = 
-mux_selectC = 
-mux_selectD = 
+mux_selectA = 0
+mux_selectB = 0
+mux_selectC = 0
+mux_selectD = 0
 mux_selects = [mux_selectD, mux_selectC, mux_selectB, mux_selectA]
 
 # Hall effect row pins
-hall_effect0 = 
-hall_effect1 = 
-hall_effect2 = 
-hall_effect3 = 
-hall_effect4 = 
-hall_effect5 = 
-hall_effect6 = 
-hall_effect7 = 
-hall_effect8 = 
-hall_effect9 = 
-hall_effect10 = 
-hall_effect11 = 
-hall_effect12 = 
-hall_effect13 = 
-hall_effect14 = 
+hall_effect0 = 0
+hall_effect1 = 0
+hall_effect2 = 0
+hall_effect3 = 0
+hall_effect4 = 0
+hall_effect5 = 0
+hall_effect6 = 0
+hall_effect7 = 0
+hall_effect8 = 0
+hall_effect9 = 0
+hall_effect10 = 0
+hall_effect11 = 0
+hall_effect12 = 0
+hall_effect13 = 0
+hall_effect14 = 0
 hall_effects = [hall_effect0, hall_effect1, hall_effect2, hall_effect3, hall_effect4, hall_effect5, hall_effect6, hall_effect7,\
                 hall_effect8, hall_effect9, hall_effect10, hall_effect11, hall_effect12, hall_effect13, hall_effect14]
 
 # GPIO setup of mux select lines and hall effect lines
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(mux_selects, GPIO.IN)
-GPIO.setup(hall_effects, GPIO.OUT)
+# GPIO.setmode(GPIO.BOARD)
+# GPIO.setup(mux_selects, GPIO.IN)
+# GPIO.setup(hall_effects, GPIO.OUT)
 
 # column is an integer [0,14]
 def select_hall_effect(column):
