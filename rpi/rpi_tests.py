@@ -1,7 +1,7 @@
 import os.path
 
 from Human import Human
-from robotic_scrabble.Board import Board
+from scrabble.Board import Board
 
 def main():
     test_word_validation()
@@ -13,7 +13,7 @@ def test_word_validation():
     
     human = Human()
     board = Board()
-    board.import_board(os.path.join(os.path.dirname(__file__), 'robotic_scrabble', 'board.csv'))
+    board.import_board(os.path.join(os.path.dirname(__file__), 'scrabble', 'board.csv'))
     # board.draw()
     move = {'c': [3, 6]}
     output(human.find_words_played(board, move), {(3, 6, 1): 'capple'})

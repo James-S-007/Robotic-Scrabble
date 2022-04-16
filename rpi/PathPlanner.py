@@ -7,7 +7,7 @@
 import os.path
 from pprint import pprint
 
-from robotic_scrabble.Board import Board
+from scrabble.Board import Board
 
 
 class Node():
@@ -142,7 +142,7 @@ class PathPlanner():
 # TODO(James): update test after implementing grid
 def main():
     board = Board()
-    board.import_board(os.path.join(os.path.dirname(__file__), 'robotic_scrabble', 'board.csv'))
+    board.import_board(os.path.join(os.path.dirname(__file__), 'scrabble', 'board.csv'))
     pathplanner = PathPlanner(board, None, None, None, None)
     print('Current Board')
     pprint(pathplanner.board.board)

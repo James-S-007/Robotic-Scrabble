@@ -3,7 +3,7 @@
 '''
 from random import randint
 
-from robotic_scrabble.AI import AI
+from scrabble.AI import AI
 from Human import Human
 from PathPlanner import PathPlanner
 from Storage import Storage

@@ -4,16 +4,16 @@ from random import randint
 
 from Gantry import Gantry
 from Human import Human
-from robotic_scrabble.AI import AI
-from robotic_scrabble.GameRules import GameRules
-from robotic_scrabble.Board import Board
+from scrabble.AI import AI
+from scrabble.GameRules import GameRules
+from scrabble.Board import Board
 
 # initialize objects
 board = Board(n=15)
 human = Human(cam_num=1)
 ai = AI(cam_num=2)
 gantry = Gantry(board, human.rack, ai.rack)
-game_rules = GameRules(dictionary=os.path.join(os.path.dirname(__file__), 'robotic_scrabble', 'dictionary.txt'))
+game_rules = GameRules(dictionary=os.path.join(os.path.dirname(__file__), 'scrabble', 'dictionary.txt'))
 # TODO(James): insert some player input stuff somewhere (mainly end turn pb)
 end_turn_pb = 
 
