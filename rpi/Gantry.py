@@ -11,7 +11,7 @@ from Storage import Storage
 class Gantry:
     def __init__(self, board):
         # pin setup on RPi & Serial connection w/ Arduino
-        self.offsets = {'ai_rack': [, ], 'ai_cam': [, ], 'human_rack': [, ], 'storage1': [, ], 'storage2', [, ]}
+        self.offsets = {'board': (, ), 'ai_rack': (, ), 'ai_cam': (, ), 'human_rack': (, ), 'storage1': (, ), 'storage2', (, )}
         self.planner = PathPlanner(board)
         self.storage1 = Storage()
         self.storage2 = Storage()
@@ -31,8 +31,8 @@ class Gantry:
         return storage, idx
 
     # Player: Human or AI type
-        # Human --> move pieces to static location on board
-        # AI --> move pices to camera, scan, move to specific rack index
+        # Human --> move pieces to static location on board near rack
+        # AI --> move pieces to camera, scan, move to specific rack index
     def distribute_letters(self, player, num_letters):
         if type(player) is AI:
             for i in range(0, num_letters):
@@ -44,10 +44,10 @@ class Gantry:
                 player.record_letter(rack_idx)
                 self.move(self.offsets['ai_cam'], (rack_idx[0] + self.offsets['ai_rack'][0], rack_idx[1] + self.offsets['ai_rack'][1]))
         elif type(player) is Human:
-            # gen all indexes from storage
-            # for storage_location in group
-                # move(start, static_location)
-            return
+            for i in range(0, num_letters):
+                storage, idx = self.rand_sample_storage()
+                offset = self.offsets['storage1'] if storage == 1 else self.offsets['storage2']
+                self.move((idx[0] + offset[0], idx[1] + offset[1]), self.offsets['human_rack'])
         else:
             print('Err: Invalid player type')
             return
