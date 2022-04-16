@@ -247,6 +247,8 @@ class AI:
             ai_move["word"] = ""  # word made not compatible with rack
         ai_move["score"] = game_rules.score_word(ai_move["word"])
         board.board = new_board
+        ai_moves["moves"] = self.letters_to_rack_idx(ai_move["moves"])
+        self.score += ai_move["score"]
         return ai_move
 
     # Converts dict of moves to be made from letters to index in the rack
@@ -254,18 +256,12 @@ class AI:
         # returns --> dict: {rack_idx: [board row, board col], ...}
     def letters_to_rack_idx(self, moves):
         positional_moves = {}
-        temp_rack = self.rack.copy()
         for letter, board_moves in moves.items():
-            rack_idx = temp_rack.index(letter)
-            temp_rack[rack_idx] = None  # mark letter as taken
+            rack_idx = self.rack.index(letter)
+            self.rack[rack_idx] = None  # mark letter as taken
             positional_moves[rack_idx] = board_moves
         return positional_moves
 
-    # new_pieces: {rack_idx: letter, rack_idx: letter, ...}
-    def update_state(self, new_pieces, word_score):
-        for idx, letter in new_pieces.items():
-            self.rack[idx] = letter
-        self.score += word_score
 
     def record_letter(self, rack_idx):
         curr_letter = None

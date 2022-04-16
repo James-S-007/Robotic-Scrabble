@@ -139,10 +139,11 @@ class PathPlanner():
         return simplified_path
 
 
+# TODO(James): update test after implementing grid
 def main():
     board = Board()
     board.import_board(os.path.join(os.path.dirname(__file__), 'robotic_scrabble', 'board.csv'))
-    pathplanner = PathPlanner(board)
+    pathplanner = PathPlanner(board, None, None, None, None)
     print('Current Board')
     pprint(pathplanner.board.board)
     path = pathplanner.astar((0, 0), (4, 7))

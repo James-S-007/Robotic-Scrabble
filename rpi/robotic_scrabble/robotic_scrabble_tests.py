@@ -36,7 +36,6 @@ def test_word_generation(board, game_rules):
     output_format(ai.rack, ['a', 'b', 'c', 'd', 'e', 'f', 'g'])
     print('New board:')
     pprint(board.board)
-    ai.update_state({0: 'h', 1: 'i', 2: 'j', 3: 'k', 4: 'l', 5: 'm', 6: 'n'}, move['score'])
     output_format(ai.rack, ['h', 'i', 'j', 'k', 'l', 'm', 'n'])
     pprint(f'New Rack: {ai.rack}, New Score: {ai.score}')
     board.import_board(os.path.join(os.path.dirname(__file__), 'board.csv'))  # reset board

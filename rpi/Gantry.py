@@ -9,12 +9,12 @@ from PathPlanner import PathPlanner
 from Storage import Storage
 
 class Gantry:
-    def __init__(self, board):
+    def __init__(self, board, human_rack, ai_rack):
         # pin setup on RPi & Serial connection w/ Arduino
         self.offsets = {'board': (, ), 'ai_rack': (, ), 'ai_cam': (, ), 'human_rack': (, ), 'storage1': (, ), 'storage2', (, )}
-        self.planner = PathPlanner(board)
         self.storage1 = Storage()
         self.storage2 = Storage()
+        self.planner = PathPlanner(board, human_rack, ai_rack, storage1, storage2)
 
     # base move pieces from start to end w/ path-planning
     def move(self, start, end):
