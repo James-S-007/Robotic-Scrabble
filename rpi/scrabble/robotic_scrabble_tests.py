@@ -33,15 +33,16 @@ def test_word_generation(board, game_rules):
     move = ai.generate_move(board, game_rules)
     print('AI Move:')
     pprint(move)
-    output_format(ai.rack, ['a', 'b', 'c', 'd', 'e', 'f', 'g'])
+    output_format(ai.rack, ['a', None, 'c', 'd', None, 'f', 'g'])
     print('New board:')
     pprint(board.board)
-    output_format(ai.rack, ['h', 'i', 'j', 'k', 'l', 'm', 'n'])
+    ai.rack = ['h', 'i', 'j', 'k', 'l', 'm', 'n']
     pprint(f'New Rack: {ai.rack}, New Score: {ai.score}')
     board.import_board(os.path.join(os.path.dirname(__file__), 'board.csv'))  # reset board
     move = ai.generate_move(board, game_rules)
     print('AI Move:')
     pprint(move)
+    output_format(ai.rack, [None, None, 'j', None, 'l', 'm', 'n'])
     print('New board:')
     pprint(board.board)
 

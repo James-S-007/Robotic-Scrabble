@@ -242,12 +242,12 @@ class AI:
     def generate_move(self, board, game_rules):
         ai_move = {}
         new_board, ai_move["word"] = self.make_best_word(board.board, game_rules.dictionary)
-        ai_move["moves"] = self.record_moves(board.board, new_board)
+        ai_move["moves"] = self.record_moves(board.board, new_board)  # TODO(James): Honestly not sure why these aren't same object, but it works
         if not ai_move["moves"]:
             ai_move["word"] = ""  # word made not compatible with rack
         ai_move["score"] = game_rules.score_word(ai_move["word"])
         board.board = new_board
-        ai_moves["moves"] = self.letters_to_rack_idx(ai_move["moves"])
+        ai_move["moves"] = self.letters_to_rack_idx(ai_move["moves"])
         self.score += ai_move["score"]
         return ai_move
 
