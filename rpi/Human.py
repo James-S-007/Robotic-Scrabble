@@ -91,9 +91,9 @@ class Human:
                 turn_score += game_rules.score_word(word)
             else:
                 print(f'Err: {word} is not a valid word. Please remove all pieces placed this turn and try again')
-                return False
+                return [], 0
         # update board for real this time
         for letter, location in move.items():
             board.board[location[0]][location[1]] = letter
         self.score += turn_score
-        return True
+        return words_played, turn_score
