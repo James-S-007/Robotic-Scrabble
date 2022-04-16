@@ -54,6 +54,13 @@ class Gantry:
 
     # Plays AI move
     # take in rack_idx --> board_location
-    def play_letters(self, move):
-        return
+    def play_letters(self, player, move):
+        if type(player) is AI:
+            for i in rack_idx, board_idx in move.items():
+                rack_offset = self.offsets['ai_rack']
+                board_offset = self.offsets['board']
+                self.move((rack_idx[0] + rack_offset[0], rack_idx[1] + rack_offset[1]), (board_idx[0] + board_offset[0], board_idx[1] + board_offset[1]))
+        else:
+            print('Err: Invalid player type')
+            return
         
