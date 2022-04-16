@@ -26,10 +26,20 @@ class Node():
 
 
 class PathPlanner():
-    def __init__(self, board):
+    def __init__(self, board, human_rack, ai_rack, storage1, storage2):
         self.board = board
+        self.human_rack = human_rack
+        self.ai_rack = ai_rack
+        self.storage1 = storage1
+        self.storage2 = storage2
+        # TODO(James): self.grid = ___
+
+    def update_global_grid(self):
+        # updates grid with current board, human_rack, ai_rack, storage1, storage2
+        return
 
 
+    # TODO(James): update astar to work with grid after implementing
     def astar(self, start, end):
         """Returns a list of tuples as a path from the given start to the given end in the given board"""
 
