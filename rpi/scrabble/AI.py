@@ -3,7 +3,7 @@
     All credit goes to the original author
 '''
 
-from Trie import index_to_char, char_to_index
+from scrabble.Trie import index_to_char, char_to_index
 
 import os.path
 import sys
