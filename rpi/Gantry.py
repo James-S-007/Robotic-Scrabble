@@ -11,7 +11,7 @@ from Storage import Storage
 
 from config import COM_PORT
 
-# testing import
+# testing imports
 import os.path
 from pprint import pprint
 from scrabble.Board import Board
