@@ -11,13 +11,14 @@ from Storage import Storage
 class Gantry:
     def __init__(self, board, human_rack, ai_rack):
         # pin setup on RPi & Serial connection w/ Arduino
-        self.offsets = {'board': (, ), 'ai_rack': (, ), 'ai_cam': (, ), 'human_rack': (, ), 'storage1': (, ), 'storage2', (, )}
+        self.offsets = {'board': (0, 0), 'ai_rack': (0, 0), 'ai_cam': (0, 0), 'human_rack': (0, 0), 'storage1': (0, 0), 'storage2': (0, 0)}
         self.storage1 = Storage()
         self.storage2 = Storage()
-        self.planner = PathPlanner(board, human_rack, ai_rack, storage1, storage2)
+        self.planner = PathPlanner(board, human_rack, ai_rack, self.storage1, self.storage2)
 
     # base move pieces from start to end w/ path-planning
     def move(self, start, end):
+        # TODO(James): Send cmd over serial port
         return self.planner.simplify_path(self.planner.astar(start, end))
 
     def rand_sample_storage(self):
@@ -56,7 +57,7 @@ class Gantry:
     # take in rack_idx --> board_location
     def play_letters(self, player, move):
         if type(player) is AI:
-            for i in rack_idx, board_idx in move.items():
+            for rack_idx, board_idx in move.items():
                 rack_offset = self.offsets['ai_rack']
                 board_offset = self.offsets['board']
                 self.move((rack_idx[0] + rack_offset[0], rack_idx[1] + rack_offset[1]), (board_idx[0] + board_offset[0], board_idx[1] + board_offset[1]))

@@ -6,11 +6,6 @@ from Board import Board
 from GameRules import GameRules
 
 
-# things to test
-    # word validation
-    # word generation from set of letters
-    # finding words from 
-
 def main():
     game_rules = GameRules(os.path.join(os.path.dirname(__file__), 'dictionary.txt'))
     board = Board()
