@@ -11,6 +11,11 @@ from Storage import Storage
 
 from config import COM_PORT
 
+# testing import
+import os.path
+from pprint import pprint
+from scrabble.Board import Board
+
 class Gantry:
     def __init__(self, board, human_rack, ai_rack):
         # pin setup on RPi & Serial connection w/ Arduino
@@ -25,7 +30,9 @@ class Gantry:
     def move(self, start, end):
         # TODO(James): Send cmd over serial port
         grid_moves = self.planner.simplify_path(self.planner.astar(start, end))
+        print(f'Grid Space Moves: {grid_moves}')
         absolute_moves = self.grid_pos_to_absolute_pos(grid_moves)
+        print(f'Absolute Space Moves: {absolute_moves}')
         self.grbl_stream.gen_and_stream(absolute_moves)
 
 
@@ -44,6 +51,7 @@ class Gantry:
             idx = self.storage2.generate_letter()
         # TODO(James): What to do if one storage bin runs out? Probably won't get that far but oh well
         return storage, idx
+
 
     # Player: Human or AI type
         # Human --> move pieces to static location on board near rack
@@ -67,6 +75,7 @@ class Gantry:
             print('Err: Invalid player type')
             return
 
+
     # Plays AI move
     # take in rack_idx --> board_location
     def play_letters(self, player, move):
@@ -79,3 +88,13 @@ class Gantry:
             print('Err: Invalid player type')
             return
         
+
+# test
+if __name__ == '__main__':
+    board = Board()
+    board.import_board(os.path.join(os.path.dirname(__file__), 'scrabble', 'board.csv'))
+    gantry = Gantry(board, None, None)
+    print('Current Board')
+    pprint(gantry.planner.board.board)
+    gantry.move((0, 0), (4, 7))
+    

@@ -52,7 +52,7 @@ class GrblStream:
         with open(self.gcode_path, 'w') as f:
             f.write('$H\n')
             for cmd in cmds:
-                f.write(f'G21 G90 X{cmd[0]} Y{cmd[1]} F5000\n')
+                f.write(f'G21 G90 X{round(cmd[0], 3)} Y{round(cmd[1], 3)} F5000\n')
             
 
     def send_gcode(self):
