@@ -3,10 +3,13 @@
 '''
 from random import randint
 
-from scrabble.AI import AI
+from Grbl.GrblStream import GrblStream
 from Human import Human
 from PathPlanner import PathPlanner
+from scrabble.AI import AI
 from Storage import Storage
+
+from config import COM_PORT
 
 class Gantry:
     def __init__(self, board, human_rack, ai_rack):
@@ -15,11 +18,22 @@ class Gantry:
         self.storage1 = Storage()
         self.storage2 = Storage()
         self.planner = PathPlanner(board, human_rack, ai_rack, self.storage1, self.storage2)
+        self.grbl_stream = GrblStream(COM_PORT)
+
 
     # base move pieces from start to end w/ path-planning
     def move(self, start, end):
         # TODO(James): Send cmd over serial port
-        return self.planner.simplify_path(self.planner.astar(start, end))
+        grid_moves = self.planner.simplify_path(self.planner.astar(start, end))
+        absolute_moves = self.grid_pos_to_absolute_pos(grid_moves)
+        self.grbl_stream.gen_and_stream(absolute_moves)
+
+
+    def grid_pos_to_absolute_pos(self, grid_moves):
+        # TODO(James): Convert list of grid positions to mm once board set
+        absolute_moves = [(move[0]*20, move[1]*20) for move in grid_moves]
+        return absolute_moves
+
 
     def rand_sample_storage(self):
         storage = randint(1, 2)
