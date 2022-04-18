@@ -33,19 +33,14 @@ import serial
 from time import sleep
 import os.path
 
-# Open grbl serial port
-COM_PORT = 'COM5'
-s = serial.Serial(COM_PORT,115200)
-
-
 class GrblStream:
     def __init__(self, com_port):
         self.s = serial.Serial(com_port, 115200)
-        s.write(str.encode("\r\n\r\n"))  # wake up grbl
+        self.s.write(str.encode("\r\n\r\n"))  # wake up grbl
         self.gcode_path = os.path.join(os.path.dirname(__file__), 'grbl.gcode')
         print('Waking up Grbl...')
         sleep(2)
-        s.flushInput()
+        self.s.flushInput()
         print('Grbl initalization complete')
         
 
@@ -66,10 +61,15 @@ class GrblStream:
             for line in f:
                 l = line.strip() # Strip all EOL characters for consistency
                 print(f'Sending: {l}')
-                s.write(str.encode(l + '\n')) # Send g-code block to grbl
-                grbl_out = s.readline() # Wait for grbl response with carriage return
+                self.s.write(str.encode(l + '\n')) # Send g-code block to grbl
+                grbl_out = self.s.readline() # Wait for grbl response with carriage return
                 print (f'Response: {grbl_out.strip()}')
 
     def gen_and_stream(self, cmds):
         self.gen_gcode(cmds)
         self.send_gcode()
+
+# test
+if __name__ == '__main__':
+    grbl = GrblStream('COM5')
+    grbl.gen_and_stream(cmds=[(200, 200), (150, 100), (100, 150), (100, 100)])
