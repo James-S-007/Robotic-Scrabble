@@ -26,17 +26,61 @@ class Node():
 
 
 class PathPlanner():
-    def __init__(self, board, human_rack, ai_rack, storage1, storage2):
+    def __init__(self, board, human_rack, ai_rack, storage1, storage2, offsets, grid_size=22):
         self.board = board
         self.human_rack = human_rack
         self.ai_rack = ai_rack
         self.storage1 = storage1
         self.storage2 = storage2
-        # TODO(James): self.grid = ___
+        self.offsets = offsets
+        self.grid = [[0 for _ in range(grid_size)] for _ in range(grid_size)]  #
+        self.update_global_grid()
 
-    def update_global_grid(self):
-        # updates grid with current board, human_rack, ai_rack, storage1, storage2
+    def init_grid_obstacles(self):
+        # TODO(James): Sets permanent grid obstacles
         return
+
+    # updates grid with current board, human_rack, ai_rack, storage1, storage2
+    def update_global_grid(self):
+        # set game board tiles
+        offset = self.offsets['board']
+        for i in range(0, len(self.board.board)):
+            for j in range(0, len(self.board.board)):
+                # emptys denoted by '-'
+                if self.board[i][j] == '-':
+                    self.grid[i+offset[0]][j+offset[1]] = 0
+                else:
+                    self.grid[i+offset[0]][j+offset[1]] = 1
+        # set rack1
+        offset = self.offsets['ai_rack']
+        for i in range(0, len(self.ai_rack)):
+            if not self.grid[i]:
+                self.grid[i+offset[0]][offset[1]] = 0
+            else:
+                self.grid[i+offset[0]][offset[1]] = 1
+        # set rack2
+        offset = self.offsets['human_rack']
+        for i in range(0, len(self.human_rack)):
+            if not self.grid[i]:
+                self.grid[i+offset[0]][offset[1]] = 0
+            else:
+                self.grid[i+offset[0]][offset[1]] = 1
+        # set storage1
+        offset = self.offsets['storage1']
+        for i in range(0, len(self.storage1)):
+            for j in range(0, len(self.storage1[0])):
+                if not self.storage1[i][j]:
+                    self.grid[i+offset[0]][j+offset[1]] = 0
+                else:
+                    self.grid[i+offset[0]][offset[1]] = 1
+        # set storage 2
+        offset = self.offsets['storage2']
+        for i in range(0, len(self.storage2)):
+            for j in range(0, len(self.storage2[0])):
+                if not self.storage2[i][j]:
+                    self.grid[i+offset[0]][j+offset[1]] = 0
+                else:
+                    self.grid[i+offset[0]][offset[1]] = 1
 
 
     # TODO(James): update astar to work with grid after implementing
@@ -143,7 +187,7 @@ class PathPlanner():
 def main():
     board = Board()
     board.import_board(os.path.join(os.path.dirname(__file__), 'scrabble', 'board.csv'))
-    pathplanner = PathPlanner(board, None, None, None, None)
+    pathplanner = PathPlanner(board, None, None, None, None, None)
     print('Current Board')
     pprint(pathplanner.board.board)
     path = pathplanner.astar((0, 0), (4, 7))

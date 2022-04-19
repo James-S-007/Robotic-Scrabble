@@ -9,7 +9,7 @@ from PathPlanner import PathPlanner
 from scrabble.AI import AI
 from Storage import Storage
 
-from config import COM_PORT
+from config import COM_PORT, ORIGIN
 
 # testing imports
 import os.path
@@ -19,10 +19,11 @@ from scrabble.Board import Board
 class Gantry:
     def __init__(self, board, human_rack, ai_rack):
         # pin setup on RPi & Serial connection w/ Arduino
-        self.offsets = {'board': (0, 0), 'ai_rack': (0, 0), 'ai_cam': (0, 0), 'human_rack': (0, 0), 'storage1': (0, 0), 'storage2': (0, 0)}
+        self.offsets = {'board': (3, 3), 'ai_rack': (7, 19), 'ai_cam': (15, 18), 'human_rack': (7, 1), 'storage1': (0, 3), 'storage2': (19, 3)}
+        self.in2mm = 25.4
         self.storage1 = Storage()
         self.storage2 = Storage()
-        self.planner = PathPlanner(board, human_rack, ai_rack, self.storage1, self.storage2)
+        self.planner = PathPlanner(board, human_rack, ai_rack, self.storage1, self.storage2, self.offsets)
         self.grbl_stream = GrblStream(COM_PORT)
 
 
@@ -37,8 +38,8 @@ class Gantry:
 
 
     def grid_pos_to_absolute_pos(self, grid_moves):
-        # TODO(James): Convert list of grid positions to mm once board set
-        absolute_moves = [(move[0]*20, move[1]*20) for move in grid_moves]
+        # Y-AXIS ON GANTRY INVERTED
+        absolute_moves = [(ORIGIN[0] + move[0]*self.in2mm, ORIGIN[1] + move[1]*self.in2mm) for move in grid_moves]
         return absolute_moves
 
 
