@@ -15,14 +15,16 @@ from config import COM_PORT, ORIGIN
 import os.path
 from pprint import pprint
 from scrabble.Board import Board
+from scrabble.AI import AI
+from scrabble.GameRules import GameRules
 
 class Gantry:
     def __init__(self, board, human_rack, ai_rack):
         # pin setup on RPi & Serial connection w/ Arduino
         self.offsets = {'board': (3, 3), 'ai_rack': (19, 7), 'ai_cam': (18, 15), 'human_rack': (1, 7), 'storage1': (3, 0), 'storage2': (3, 19)}
         self.in2mm = 25.4
-        self.storage1 = Storage()
-        self.storage2 = Storage()
+        self.storage1 = Storage(rows=15, cols=1)
+        self.storage2 = Storage(rows=15, cols=1)
         self.planner = PathPlanner(board, human_rack, ai_rack, self.storage1, self.storage2, self.offsets)
         self.grbl_stream = GrblStream(COM_PORT)
 
@@ -39,6 +41,7 @@ class Gantry:
         absolute_moves = self.grid_pos_to_absolute_pos(grid_moves)
         print(f'Absolute Space Moves: {absolute_moves}')
         self.grbl_stream.gen_and_stream(absolute_moves)
+        self.planner.update_global_grid()
 
 
     def grid_pos_to_absolute_pos(self, grid_moves):
@@ -87,7 +90,7 @@ class Gantry:
             for rack_idx, board_idx in move.items():
                 rack_offset = self.offsets['ai_rack']
                 board_offset = self.offsets['board']
-                self.move((rack_idx[0] + rack_offset[0], rack_idx[1] + rack_offset[1]), (board_idx[0] + board_offset[0], board_idx[1] + board_offset[1]))
+                self.move((rack_offset[0], rack_idx + rack_offset[1]), (board_idx[0] + board_offset[0], board_idx[1] + board_offset[1]))
         else:
             print('Err: Invalid player type')
             return
@@ -98,9 +101,16 @@ if __name__ == '__main__':
     board = Board()
     board.import_board(os.path.join(os.path.dirname(__file__), 'scrabble', 'board.csv'))
     human_rack = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
-    ai_rack = ['h', 'i', 'j', 'k', 'l', 'm', 'n']
-    gantry = Gantry(board, human_rack, ai_rack)
+    ai = AI()
+    ai.rack = ['h', 'i', 'j', 'k', 'l', 'm', 'n']
+    game_rules = GameRules(dictionary=os.path.join(os.path.dirname(__file__), 'scrabble', 'dictionary.txt'))
+    gantry = Gantry(board, human_rack, ai.rack)
     print('Current Grid')
     pprint(gantry.planner.grid)
-    gantry.move((20, 0), (17, 13))
+    ai_move = ai.generate_move(board, game_rules)
+    print('AI Move')
+    pprint(ai_move)
+    gantry.play_letters(ai, ai_move['moves'])
+    gantry.distribute_letters(ai, ai.rack.count(None))
+    # gantry.move((20, 0), (17, 13))
     
