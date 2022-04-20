@@ -19,26 +19,29 @@ from scrabble.Board import Board
 class Gantry:
     def __init__(self, board, human_rack, ai_rack):
         # pin setup on RPi & Serial connection w/ Arduino
-        self.offsets = {'board': (3, 3), 'ai_rack': (7, 19), 'ai_cam': (15, 18), 'human_rack': (7, 1), 'storage1': (0, 3), 'storage2': (19, 3)}
+        self.offsets = {'board': (3, 3), 'ai_rack': (19, 7), 'ai_cam': (18, 15), 'human_rack': (1, 7), 'storage1': (3, 0), 'storage2': (3, 19)}
         self.in2mm = 25.4
         self.storage1 = Storage()
         self.storage2 = Storage()
         self.planner = PathPlanner(board, human_rack, ai_rack, self.storage1, self.storage2, self.offsets)
         self.grbl_stream = GrblStream(COM_PORT)
 
-
     # base move pieces from start to end w/ path-planning
     def move(self, start, end):
-        # TODO(James): Send cmd over serial port
         grid_moves = self.planner.simplify_path(self.planner.astar(start, end))
-        print(f'Grid Space Moves: {grid_moves}')
+        print(f'Grid Space Moves: {grid_moves}')  # TODO(James): pry invert y-axis here
+        # fix axes: gantry <---> planner
+        #           x <---> y
+        #           y <---> -x
+        for i in range(0, len(grid_moves)):
+            grid_moves[i] = (grid_moves[i][1], (len(self.planner.grid) - 1) - grid_moves[i][0])
+
         absolute_moves = self.grid_pos_to_absolute_pos(grid_moves)
         print(f'Absolute Space Moves: {absolute_moves}')
         self.grbl_stream.gen_and_stream(absolute_moves)
 
 
     def grid_pos_to_absolute_pos(self, grid_moves):
-        # Y-AXIS ON GANTRY INVERTED
         absolute_moves = [(ORIGIN[0] + move[0]*self.in2mm, ORIGIN[1] + move[1]*self.in2mm) for move in grid_moves]
         return absolute_moves
 
@@ -94,8 +97,10 @@ class Gantry:
 if __name__ == '__main__':
     board = Board()
     board.import_board(os.path.join(os.path.dirname(__file__), 'scrabble', 'board.csv'))
-    gantry = Gantry(board, None, None)
-    print('Current Board')
-    pprint(gantry.planner.board.board)
-    gantry.move((0, 0), (4, 7))
+    human_rack = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+    ai_rack = ['h', 'i', 'j', 'k', 'l', 'm', 'n']
+    gantry = Gantry(board, human_rack, ai_rack)
+    print('Current Grid')
+    pprint(gantry.planner.grid)
+    gantry.move((20, 0), (17, 13))
     

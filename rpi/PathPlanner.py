@@ -26,7 +26,7 @@ class Node():
 
 
 class PathPlanner():
-    def __init__(self, board, human_rack, ai_rack, storage1, storage2, offsets, grid_size=22):
+    def __init__(self, board, human_rack, ai_rack, storage1, storage2, offsets, grid_size=21):
         self.board = board
         self.human_rack = human_rack
         self.ai_rack = ai_rack
@@ -34,11 +34,12 @@ class PathPlanner():
         self.storage2 = storage2
         self.offsets = offsets
         self.grid = [[0 for _ in range(grid_size)] for _ in range(grid_size)]  #
+        self.init_grid_obstacles()
         self.update_global_grid()
 
     def init_grid_obstacles(self):
         # TODO(James): Sets permanent grid obstacles
-        return
+        self.grid[18][16] = 1  # ai camera
 
     # updates grid with current board, human_rack, ai_rack, storage1, storage2
     def update_global_grid(self):
@@ -47,7 +48,7 @@ class PathPlanner():
         for i in range(0, len(self.board.board)):
             for j in range(0, len(self.board.board)):
                 # emptys denoted by '-'
-                if self.board[i][j] == '-':
+                if self.board.board[i][j] == '-':
                     self.grid[i+offset[0]][j+offset[1]] = 0
                 else:
                     self.grid[i+offset[0]][j+offset[1]] = 1
@@ -55,32 +56,32 @@ class PathPlanner():
         offset = self.offsets['ai_rack']
         for i in range(0, len(self.ai_rack)):
             if not self.grid[i]:
-                self.grid[i+offset[0]][offset[1]] = 0
+                self.grid[offset[0]][i+offset[1]] = 0
             else:
-                self.grid[i+offset[0]][offset[1]] = 1
+                self.grid[offset[0]][i+offset[1]] = 1
         # set rack2
         offset = self.offsets['human_rack']
         for i in range(0, len(self.human_rack)):
             if not self.grid[i]:
-                self.grid[i+offset[0]][offset[1]] = 0
+                self.grid[offset[0]][i+offset[1]] = 0
             else:
-                self.grid[i+offset[0]][offset[1]] = 1
+                self.grid[offset[0]][i+offset[1]] = 1
         # set storage1
         offset = self.offsets['storage1']
-        for i in range(0, len(self.storage1)):
-            for j in range(0, len(self.storage1[0])):
-                if not self.storage1[i][j]:
+        for i in range(0, len(self.storage1.letters)):
+            for j in range(0, len(self.storage1.letters[0])):
+                if self.storage1.letters[i][j] == 0:
                     self.grid[i+offset[0]][j+offset[1]] = 0
                 else:
-                    self.grid[i+offset[0]][offset[1]] = 1
+                    self.grid[i+offset[0]][j+offset[1]] = 1
         # set storage 2
         offset = self.offsets['storage2']
-        for i in range(0, len(self.storage2)):
-            for j in range(0, len(self.storage2[0])):
-                if not self.storage2[i][j]:
+        for i in range(0, len(self.storage2.letters)):
+            for j in range(0, len(self.storage2.letters[0])):
+                if self.storage2.letters[i][j] == 0:
                     self.grid[i+offset[0]][j+offset[1]] = 0
                 else:
-                    self.grid[i+offset[0]][offset[1]] = 1
+                    self.grid[i+offset[0]][j+offset[1]] = 1
 
 
     # TODO(James): update astar to work with grid after implementing
@@ -132,11 +133,11 @@ class PathPlanner():
                 node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
 
                 # Make sure within range
-                if node_position[0] > (len(self.board.board) - 1) or node_position[0] < 0 or node_position[1] > (len(self.board.board[len(self.board.board)-1]) -1) or node_position[1] < 0:
+                if node_position[0] > (len(self.grid) - 1) or node_position[0] < 0 or node_position[1] > (len(self.grid[len(self.grid)-1]) -1) or node_position[1] < 0:
                     continue
 
                 # Make sure walkable terrain
-                if self.board.board[node_position[0]][node_position[1]] != '-':
+                if self.grid[node_position[0]][node_position[1]] != 0:
                     continue
 
                 # Create new node
