@@ -29,7 +29,7 @@ class Gantry:
     # base move pieces from start to end w/ path-planning
     def move(self, start, end):
         grid_moves = self.planner.simplify_path(self.planner.astar(start, end))
-        print(f'Grid Space Moves: {grid_moves}')  # TODO(James): pry invert y-axis here
+        print(f'Grid Space Moves: {grid_moves}')
         # fix axes: gantry <---> planner
         #           x <---> y
         #           y <---> -x

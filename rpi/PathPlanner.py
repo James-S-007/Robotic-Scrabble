@@ -84,7 +84,6 @@ class PathPlanner():
                     self.grid[i+offset[0]][j+offset[1]] = 1
 
 
-    # TODO(James): update astar to work with grid after implementing
     def astar(self, start, end):
         """Returns a list of tuples as a path from the given start to the given end in the given board"""
 
@@ -184,7 +183,7 @@ class PathPlanner():
         return simplified_path
 
 
-# TODO(James): update test after implementing grid
+# Test function : DEPRECATED, test with Gantry class that encapsulated PathPlanner
 def main():
     board = Board()
     board.import_board(os.path.join(os.path.dirname(__file__), 'scrabble', 'board.csv'))

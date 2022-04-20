@@ -64,7 +64,7 @@ class Human:
         word = ''
         root = None
         if axis == 0:
-            while curr_idx > 0 and board_arr[const_idx][curr_idx - 1] != '-':  # TODO(James): Input stuff to deal with side of boared
+            while curr_idx > 0 and board_arr[const_idx][curr_idx - 1] != '-':
                 curr_idx -= 1
             root = (const_idx, curr_idx, axis)
             while curr_idx <= 14 and board_arr[const_idx][curr_idx] != '-':
