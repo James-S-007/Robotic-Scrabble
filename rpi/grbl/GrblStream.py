@@ -39,6 +39,8 @@ class GrblStream:
     def home(self):
         with open(self.gcode_path, 'w') as f:
             f.write('$H\n')
+            f.write(f'G21 G90 X50 Y50 F5000\n')
+
         self.send_gcode()
         sleep(5)
 
