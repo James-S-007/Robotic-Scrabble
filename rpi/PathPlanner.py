@@ -86,7 +86,11 @@ class PathPlanner():
 
     def astar(self, start, end):
         """Returns a list of tuples as a path from the given start to the given end in the given board"""
-
+        # This is very jank but need a quick solution, will assume start/end are unoccupied for planning and reset after
+        initial_start_state = self.grid[start[0]][start[1]]
+        initial_end_state = self.grid[end[0]][end[1]]
+        self.grid[start[0]][start[1]] = 0
+        self.grid[end[0]][end[1]] = 0
         # Create start and end node
         start_node = Node(None, start)
         start_node.g = start_node.h = start_node.f = 0
@@ -122,6 +126,9 @@ class PathPlanner():
                 while current is not None:
                     path.append(current.position)
                     current = current.parent
+                # reset grid start and end points before returning
+                self.grid[start[0]][start[1]] = initial_start_state
+                self.grid[end[0]][end[1]] = initial_end_state
                 return path[::-1] # Return reversed path
 
             # Generate children
