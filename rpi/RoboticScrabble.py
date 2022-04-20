@@ -30,7 +30,7 @@ while True:
         gantry.distribute_letters(human, human.rack.count(None))
     elif curr_player == 1:  # AI turn
         ai_move = ai.generate_move(board, game_rules)
-        gantry.play_letters(ai, ai_move)
+        gantry.play_letters(ai, ai_move['moves'])
         gantry.distribute_letters(ai, ai.rack.count(None))
         # TODO(James): output words made and score to LCD
     else:

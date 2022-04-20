@@ -1,6 +1,6 @@
 import pickle
 
-from Trie import Trie
+from scrabble.Trie import Trie
 
 class GameRules:
     def __init__(self, dictionary):
