@@ -1,2 +1,2 @@
 COM_PORT = 'COM5'
-ORIGIN = (, )  # Gantry position for grid origin
+ORIGIN = (50, 20)  # Gantry position for grid origin

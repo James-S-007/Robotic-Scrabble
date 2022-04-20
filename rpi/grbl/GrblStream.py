@@ -10,6 +10,7 @@ class GrblStream:
         print('Waking up Grbl...')
         sleep(2)
         self.s.flushInput()
+        self.home()
         print('Grbl initalization complete')
         
 
@@ -19,7 +20,8 @@ class GrblStream:
     # cmds = [(x, y), (x, y), ...]
     def gen_gcode(self, cmds):
         with open(self.gcode_path, 'w') as f:
-            f.write('$H\n')
+            f.write('$X\n')
+            # f.write(f'G21 G90 X35 Y30 F5000\n')
             for cmd in cmds:
                 f.write(f'G21 G90 X{round(cmd[0], 3)} Y{round(cmd[1], 3)} F5000\n')
             
@@ -34,9 +36,16 @@ class GrblStream:
                 grbl_out = self.s.readline() # Wait for grbl response with carriage return
                 print (f'Response: {grbl_out.strip()}')
 
+    def home(self):
+        with open(self.gcode_path, 'w') as f:
+            f.write('$H\n')
+        self.send_gcode()
+        sleep(5)
+
     def gen_and_stream(self, cmds):
         self.gen_gcode(cmds)
         self.send_gcode()
+        sleep(8)
 
 # test
 if __name__ == '__main__':
