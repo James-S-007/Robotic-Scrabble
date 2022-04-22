@@ -38,13 +38,15 @@ class Camera:
             ret, image = self.cap.read()
             if show_img:
                 cv2.imshow('Imagetest', image)
-            cv2.imwrite(os.path.join(os.path.dirname(__file__), f'cv2_cap{cap_num}.jpg'), image)
             cap_num += 1
             k = cv2.waitKey(1)
-            if k != -1:
+            if k == ord(' '):
+                cv2.imwrite(os.path.join(os.path.dirname(__file__), f'cv2_cap{cap_num}.jpg'), image)
+                cap_num += 1
+            if k == ord('q'):
                     break
             sleep(0.2)
     
 if __name__ == '__main__':
     cam = Camera(0)
-    cam.capture_image()
+    cam.capture_image(show_img=True)
