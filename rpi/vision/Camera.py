@@ -16,6 +16,14 @@ class Camera:
             self.valid = False
         else:
             self.valid = True
+        self.mtx = [[1078.88719, 0.00000000, 969.100204], \
+                    [0.00000000, 1079.16746, 552.814241], \
+                    [0.00000000, 0.00000000, 1.00000000]]
+        self.dist = [-0.40432475, 0.1816134, -0.00207898, 0.00111414, -0.03938178]
+        self.roi = [866, 223, 740, 670]
+        self.new_camera_mtx = [[415.86682129, 0.0000000000, 1239.7650000], \
+                                [0.000000000, 669.40087891, 565.55338968], \
+                                [0.000000000, 0.0000000000, 1.0000000000]]
 
     def __del__(self):
         self.cap.release()
@@ -37,8 +45,8 @@ class Camera:
         while True:
             ret, image = self.cap.read()
             if show_img:
-                cv2.imshow('Imagetest', image)
-            cap_num += 1
+                dst = cv2.undistort(image, self.mtx, self.dist, None, self.new_camera_mtx)
+                cv2.imshow('Imagetest', dst)
             k = cv2.waitKey(1)
             if k == ord(' '):
                 cv2.imwrite(os.path.join(os.path.dirname(__file__), f'cv2_cap{cap_num}.jpg'), image)
