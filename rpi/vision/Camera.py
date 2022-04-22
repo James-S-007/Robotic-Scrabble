@@ -5,6 +5,10 @@ import numpy as np
 import os.path
 from time import sleep
 
+# TODO(James):
+    # https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html
+    # https://github.com/tizianofiorenzani/how_do_drones_work/blob/master/opencv/cameracalib.py
+
 # To modify camera parameters: v4l2-ctl -d /dev/video0 --list-ctrls-menus
 # Camera height above board: 26in
 
@@ -51,11 +55,10 @@ class Camera:
                 cv2.imshow('Imagetest', dst)
             k = cv2.waitKey(1)
             if k == ord(' '):
-                cv2.imwrite(os.path.join(os.path.dirname(__file__), f'cv2_cap{cap_num}.jpg'), image)
+                cv2.imwrite(os.path.join(os.path.dirname(__file__), f'cv2_cap{cap_num}.jpg'), dst)
                 cap_num += 1
             if k == ord('q'):
                     break
-            sleep(0.2)
     
 if __name__ == '__main__':
     cam = Camera(0)
