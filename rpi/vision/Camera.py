@@ -1,5 +1,6 @@
 from pyzbar import pyzbar
 import cv2
+import numpy as np
 
 import os.path
 from time import sleep
@@ -21,9 +22,10 @@ class Camera:
                     [0.00000000, 0.00000000, 1.00000000]]
         self.dist = [-0.40432475, 0.1816134, -0.00207898, 0.00111414, -0.03938178]
         self.roi = [866, 223, 740, 670]
-        self.new_camera_mtx = [[415.86682129, 0.0000000000, 1239.7650000], \
+        self.new_camera_mtx = np.array([[415.86682129, 0.0000000000, 1239.7650000], \
                                 [0.000000000, 669.40087891, 565.55338968], \
-                                [0.000000000, 0.0000000000, 1.0000000000]]
+                                [0.000000000, 0.0000000000, 1.0000000000]], dtype='float64')
+        # self.new_camera_mtx = cv2.UMat(self.new_camera_mtx)
 
     def __del__(self):
         self.cap.release()
@@ -57,4 +59,4 @@ class Camera:
     
 if __name__ == '__main__':
     cam = Camera(0)
-    cam.capture_image(show_img=True)
+    # cam.capture_image(show_img=True)
