@@ -7,7 +7,7 @@ ___
 
 | Item | Assignee | Status |
 | ---- | -------- | ------ |
-| Print decal and attach to acrylic | Ayush | In progress |
+| Print decal and attach to acrylic | Ayush and Kat | In progress |
 | Test camera height | Ayush and James | Complete |
 | Register Raspberry Pi on network with static ip | James | Complete |
 | Update code to work with CV | James | In progress |
