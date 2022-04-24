@@ -26,6 +26,7 @@ class Camera:
                     [0.00000000, 0.00000000, 1.00000000]], dtype='float64')
         self.dist = np.array([-0.40432475, 0.1816134, -0.00207898, 0.00111414, -0.03938178], dtype='float64')
         self.roi = (866, 223, 740, 670)
+        self.x, self.y, self.w, self.h = self.roi
         self.new_camera_mtx = np.array([[415.86682129, 0.0000000000, 1239.7650000], \
                                 [0.000000000, 669.40087891, 565.55338968], \
                                 [0.000000000, 0.0000000000, 1.0000000000]], dtype='float64')
@@ -52,6 +53,7 @@ class Camera:
             ret, image = self.cap.read()
             if show_img:
                 dst = cv2.undistort(image, self.mtx, self.dist, None, self.new_camera_mtx)
+                dst = dst[self.y:self.y+self.h, self.x:self.x+self.w]  # crop
                 cv2.imshow('Imagetest', dst)
             k = cv2.waitKey(1)
             if k == ord(' '):
