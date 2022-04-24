@@ -52,10 +52,9 @@ class Camera:
         while True:
             ret, image = self.cap.read()
             if show_img:
-                # dst = cv2.undistort(image, self.mtx, self.dist, None, self.new_camera_mtx)
-                # dst = dst[self.y:self.y+self.h, self.x:self.x+self.w]  # crop
-                # cv2.imshow('Imagetest', dst)
-                cv2.imshow('Imagetest', image)
+                dst = cv2.undistort(image, self.mtx, self.dist, None, self.new_camera_mtx)
+                dst = dst[self.y:self.y+self.h, self.x:self.x+self.w]  # crop
+                cv2.imshow('Imagetest', dst)
             k = cv2.waitKey(1)
             if k == ord(' '):
                 cv2.imwrite(os.path.join(os.path.dirname(__file__), f'cv2_cap{cap_num}.jpg'), dst)
