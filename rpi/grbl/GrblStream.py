@@ -2,8 +2,8 @@ import serial
 from time import sleep
 import os.path
 
-# SERVO: M3 S1 --> Raise
-#        M3 S3500 --> Lower
+RAISE_SERVO = 'M3 S500'
+LOWER_SERVO = 'M3 S3500'
 
 class GrblStream:
     def __init__(self, com_port):
@@ -27,12 +27,13 @@ class GrblStream:
             # f.write(f'G21 G90 X35 Y30 F5000\n')
             # TODO(James): Make this cleaner, quick fix for now to implement servo
             count = 0
-            f.write('M3 S3500\n')
+            f.write(f'{LOWER_SERVO}\n')
             for cmd in cmds:
                 f.write(f'G21 G90 X{round(cmd[0], 3)} Y{round(cmd[1], 3)} F5000\n')
                 if count == 0:
-                    f.write('M3 S1\n')  # raise servo after reaching home position
-            f.write('M3 S3500\n')  # finally lower servo at end
+                    f.write(f'{RAISE_SERVO}\n')  # raise servo after reaching home position
+                    count += 1
+            f.write(f'{LOWER_SERVO}\n')  # finally lower servo at end
                 
 
             
@@ -49,7 +50,8 @@ class GrblStream:
 
     def home(self):
         with open(self.gcode_path, 'w') as f:
-            f.write('M3 S3500\n')  # initially lower magnet
+            f.write('$X\n')
+            f.write(f'{LOWER_SERVO}\n')  # initially lower magnet
             f.write('$H\n')
             f.write(f'G21 G90 X50 Y50 F5000\n')
 
