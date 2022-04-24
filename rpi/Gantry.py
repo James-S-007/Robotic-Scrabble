@@ -70,7 +70,7 @@ class Gantry:
                 offset = self.offsets['storage1'] if storage == 1 else self.offsets['storage2']
                 rack_idx = player.rack.index(None)
                 # player.record_letter(rack_idx) NO LONGER NEED SCANNING
-                self.move(((idx[0] + offset[0], idx[1] + offset[1])), (rack_idx[0] + self.offsets['ai_rack'][0], rack_idx[1] + self.offsets['ai_rack'][1]))
+                self.move(((idx[0] + offset[0], idx[1] + offset[1])), (self.offsets['ai_rack'][0], rack_idx + self.offsets['ai_rack'][1]))
         elif type(player) is Human:
             for i in range(0, num_letters):
                 storage, idx = self.rand_sample_storage()
