@@ -21,7 +21,7 @@ from scrabble.GameRules import GameRules
 class Gantry:
     def __init__(self, board, human_rack, ai_rack):
         # pin setup on RPi & Serial connection w/ Arduino
-        self.offsets = {'board': (3, 3), 'ai_rack': (19, 7), 'ai_cam': (18, 15), 'human_rack': (1, 7), 'storage1': (3, 0), 'storage2': (3, 19)}
+        self.offsets = {'board': (5, 5), 'ai_rack': (23, 9), 'ai_cam': (18, 15), 'human_rack': (1, 9), 'storage1': (5, 1), 'storage2': (5, 22)}
         self.in2mm = 25.4
         self.storage1 = Storage(rows=15, cols=1)
         self.storage2 = Storage(rows=15, cols=1)
@@ -68,11 +68,9 @@ class Gantry:
             for i in range(0, num_letters):
                 storage, idx = self.rand_sample_storage()
                 offset = self.offsets['storage1'] if storage == 1 else self.offsets['storage2']
-                self.move((idx[0] + offset[0], idx[1] + offset[1]), self.offsets['ai_cam'])
-                # find rack_idx
                 rack_idx = player.rack.index(None)
-                player.record_letter(rack_idx)
-                self.move(self.offsets['ai_cam'], (rack_idx[0] + self.offsets['ai_rack'][0], rack_idx[1] + self.offsets['ai_rack'][1]))
+                # player.record_letter(rack_idx) NO LONGER NEED SCANNING
+                self.move(((idx[0] + offset[0], idx[1] + offset[1])), (rack_idx[0] + self.offsets['ai_rack'][0], rack_idx[1] + self.offsets['ai_rack'][1]))
         elif type(player) is Human:
             for i in range(0, num_letters):
                 storage, idx = self.rand_sample_storage()
@@ -102,7 +100,7 @@ if __name__ == '__main__':
     board.import_board(os.path.join(os.path.dirname(__file__), 'scrabble', 'board.csv'))
     human_rack = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
     ai = AI()
-    ai.rack = ['h', 'i', 'j', 'k', 'l', 'm', 'n']
+    ai.rack = ['m', 'i', 'e', 'h', 'k', 'j', 'e']
     game_rules = GameRules(dictionary=os.path.join(os.path.dirname(__file__), 'scrabble', 'dictionary.txt'))
     gantry = Gantry(board, human_rack, ai.rack)
     print('Current Grid')

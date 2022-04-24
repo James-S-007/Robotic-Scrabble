@@ -26,7 +26,7 @@ class Node():
 
 
 class PathPlanner():
-    def __init__(self, board, human_rack, ai_rack, storage1, storage2, offsets, grid_size=21):
+    def __init__(self, board, human_rack, ai_rack, storage1, storage2, offsets, grid_size=25):
         self.board = board
         self.human_rack = human_rack
         self.ai_rack = ai_rack
@@ -38,8 +38,8 @@ class PathPlanner():
         self.update_global_grid()
 
     def init_grid_obstacles(self):
-        # TODO(James): Sets permanent grid obstacles
-        self.grid[18][16] = 1  # ai camera
+        # self.grid[18][16] = 1  # ai camera
+        return # no grid obstacles rn with elevated camera
 
     # updates grid with current board, human_rack, ai_rack, storage1, storage2
     def update_global_grid(self):
