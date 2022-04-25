@@ -51,6 +51,9 @@ class Camera:
         cap_num = 0
         while True:
             ret, image = self.cap.read()
+            if not ret:
+                print('Camera disconnected, exiting...')
+                return False
             if show_img:
                 dst = cv2.undistort(image, self.mtx, self.dist, None, self.new_camera_mtx)
                 dst = dst[self.y:self.y+self.h, self.x:self.x+self.w]  # crop
