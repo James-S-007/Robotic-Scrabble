@@ -26,7 +26,7 @@ class Node():
 
 
 class PathPlanner():
-    def __init__(self, board, human_rack, ai_rack, storage1, storage2, offsets, grid_size_rows=21, grid_size_cols=23):
+    def __init__(self, board, human_rack, ai_rack, storage1, storage2, offsets, grid_size_rows=23, grid_size_cols=23):
         self.board = board
         self.human_rack = human_rack
         self.ai_rack = ai_rack
