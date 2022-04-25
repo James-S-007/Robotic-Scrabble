@@ -2,7 +2,7 @@ import serial
 from time import sleep
 import os.path
 
-RAISE_SERVO = 'M3 S1'
+RAISE_SERVO = 'M3 S1500'
 LOWER_SERVO = 'M3 S3500'
 
 class GrblStream:
