@@ -268,10 +268,10 @@ class AI:
 
 
     def record_letter(self, rack_idx):
-        curr_letter = None
-        while not curr_letter:
-            curr_letter = self.camera.check_letter()
-            sleep(.05)
+        curr_letter = 'z'
+        # while not curr_letter:
+            # curr_letter = self.camera.check_letter()
+            # sleep(.05)
         self.rack[rack_idx] = curr_letter
         return True
 

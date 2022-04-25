@@ -37,7 +37,7 @@ class Gantry:
         #           y <---> -x
         for i in range(0, len(grid_moves)):
             grid_moves[i] = (grid_moves[i][1], (len(self.planner.grid) - 1) - grid_moves[i][0])
-
+        print(f'Gantry Space Moves: {grid_moves}')
         absolute_moves = self.grid_pos_to_absolute_pos(grid_moves)
         print(f'Absolute Space Moves: {absolute_moves}')
         self.grbl_stream.gen_and_stream(absolute_moves)
@@ -69,8 +69,9 @@ class Gantry:
                 storage, idx = self.rand_sample_storage()
                 offset = self.offsets['storage1'] if storage == 1 else self.offsets['storage2']
                 rack_idx = player.rack.index(None)
-                # player.record_letter(rack_idx) NO LONGER NEED SCANNING
-                self.move(((idx[0] + offset[0], idx[1] + offset[1])), (self.offsets['ai_rack'][0], rack_idx + self.offsets['ai_rack'][1]))
+                player.record_letter(rack_idx)  # TODO(James): Doesn't actually store what letter!
+                print(f'Distributing Letter from storage{storage}: {idx} to rack index: {rack_idx}')
+                self.move((idx[0] + offset[0], idx[1] + offset[1]), (self.offsets['ai_rack'][0], rack_idx + self.offsets['ai_rack'][1]))
         elif type(player) is Human:
             for i in range(0, num_letters):
                 storage, idx = self.rand_sample_storage()
@@ -88,6 +89,7 @@ class Gantry:
             for rack_idx, board_idx in move.items():
                 rack_offset = self.offsets['ai_rack']
                 board_offset = self.offsets['board']
+                print(f'Playing letter from rack idx {rack_idx} to board idx{board_idx}')
                 self.move((rack_offset[0], rack_idx + rack_offset[1]), (board_idx[0] + board_offset[0], board_idx[1] + board_offset[1]))
         else:
             print('Err: Invalid player type')
@@ -104,11 +106,10 @@ if __name__ == '__main__':
     game_rules = GameRules(dictionary=os.path.join(os.path.dirname(__file__), 'scrabble', 'dictionary.txt'))
     gantry = Gantry(board, human_rack, ai.rack)
     print('Current Grid')
-    pprint(gantry.planner.grid)
+    # pprint(gantry.planner.grid)
     ai_move = ai.generate_move(board, game_rules)
     print('AI Move')
     pprint(ai_move)
     gantry.play_letters(ai, ai_move['moves'])
     gantry.distribute_letters(ai, ai.rack.count(None))
-    # gantry.move((20, 0), (17, 13))
     
