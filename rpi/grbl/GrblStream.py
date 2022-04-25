@@ -2,7 +2,7 @@ import serial
 from time import sleep
 import os.path
 
-RAISE_SERVO = 'M3 S500'
+RAISE_SERVO = 'M3 S1'
 LOWER_SERVO = 'M3 S3500'
 
 class GrblStream:
@@ -33,6 +33,13 @@ class GrblStream:
                 if count == 0:
                     f.write(f'{RAISE_SERVO}\n')  # raise servo after reaching home position
                     count += 1
+                    # jog around to pick up piece more consistently
+                    f.write(f'G21 G90 X{round(cmd[0] + 3, 3)} Y{round(cmd[1], 3)} F5000\n')
+                    f.write(f'G21 G90 X{round(cmd[0] - 3, 3)} Y{round(cmd[1], 3)} F5000\n')
+                    f.write(f'G21 G90 X{round(cmd[0], 3)} Y{round(cmd[1], 3)} F5000\n')
+            f.write(f'G21 G90 X{round(cmds[-1][0] + 2, 3)} Y{round(cmds[-1][1], 3)} F5000\n')
+            f.write(f'G21 G90 X{round(cmds[-1][0] - 2, 3)} Y{round(cmds[-1][1], 3)} F5000\n')
+            f.write(f'G21 G90 X{round(cmds[-1][0], 3)} Y{round(cmds[-1][1], 3)} F5000\n')
             f.write(f'{LOWER_SERVO}\n')  # finally lower servo at end
                 
 
@@ -43,20 +50,22 @@ class GrblStream:
         with open(self.gcode_path, 'r') as f:
             for line in f:
                 l = line.strip() # Strip all EOL characters for consistency
-                print(f'Sending: {l}')
+                # print(f'Sending: {l}')
                 self.s.write(str.encode(l + '\n')) # Send g-code block to grbl
                 grbl_out = self.s.readline() # Wait for grbl response with carriage return
-                print (f'Response: {grbl_out.strip()}')
+                # print (f'Response: {grbl_out.strip()}')
 
     def home(self):
         with open(self.gcode_path, 'w') as f:
-            f.write('$X\n')
-            f.write(f'{LOWER_SERVO}\n')  # initially lower magnet
-            f.write('$H\n')
-            f.write(f'G21 G90 X50 Y50 F5000\n')
+            # f.write('$G\n')  # soft reset
+            f.write('$X\n')  # remove alarms
+            f.write(f'{LOWER_SERVO}\n')  # lower magnet
+            f.write('$H\n')  # home
+            f.write(f'{LOWER_SERVO}\n')  # lower magnet
+            f.write(f'G21 G90 X50 Y50 F5000\n')  # leave home
 
         self.send_gcode()
-        sleep(5)
+        sleep(10)
 
     def gen_and_stream(self, cmds):
         self.gen_gcode(cmds)
