@@ -2,7 +2,7 @@ import serial
 from time import sleep
 import os.path
 
-RAISE_SERVO = 'M3 S1500'
+RAISE_SERVO = 'M3 S1200'
 LOWER_SERVO = 'M3 S3500'
 
 class GrblStream:
@@ -53,7 +53,7 @@ class GrblStream:
                 # print(f'Sending: {l}')
                 self.s.write(str.encode(l + '\n')) # Send g-code block to grbl
                 grbl_out = self.s.readline() # Wait for grbl response with carriage return
-                # print (f'Response: {grbl_out.strip()}')
+                print (f'Response: {grbl_out.strip()}')
 
     def home(self):
         with open(self.gcode_path, 'w') as f:
@@ -70,7 +70,6 @@ class GrblStream:
     def gen_and_stream(self, cmds):
         self.gen_gcode(cmds)
         self.send_gcode()
-        sleep(10)
 
 # test
 if __name__ == '__main__':
