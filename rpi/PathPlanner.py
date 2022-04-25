@@ -26,14 +26,14 @@ class Node():
 
 
 class PathPlanner():
-    def __init__(self, board, human_rack, ai_rack, storage1, storage2, offsets, grid_size=25):
+    def __init__(self, board, human_rack, ai_rack, storage1, storage2, offsets, grid_size_rows=21, grid_size_cols=23):
         self.board = board
         self.human_rack = human_rack
         self.ai_rack = ai_rack
         self.storage1 = storage1
         self.storage2 = storage2
         self.offsets = offsets
-        self.grid = [[0 for _ in range(grid_size)] for _ in range(grid_size)]  #
+        self.grid = [[0 for _ in range(grid_size_cols)] for _ in range(grid_size_rows)]  #
         self.init_grid_obstacles()
         self.update_global_grid()
 

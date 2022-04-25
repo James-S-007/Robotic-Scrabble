@@ -21,7 +21,7 @@ from scrabble.GameRules import GameRules
 class Gantry:
     def __init__(self, board, human_rack, ai_rack):
         # pin setup on RPi & Serial connection w/ Arduino
-        self.offsets = {'board': (5, 5), 'ai_rack': (23, 9), 'ai_cam': (18, 15), 'human_rack': (1, 9), 'storage1': (5, 1), 'storage2': (5, 22)}
+        self.offsets = {'board': (3, 4), 'ai_rack': (20, 8), 'ai_cam': (18, 15), 'human_rack': (1, 8), 'storage1': (3, 1), 'storage2': (3, 20)}
         self.in2mm = 25.4
         self.storage1 = Storage(rows=15, cols=1)
         self.storage2 = Storage(rows=15, cols=1)
