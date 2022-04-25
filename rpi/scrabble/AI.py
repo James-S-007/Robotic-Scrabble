@@ -225,7 +225,10 @@ class AI:
         for i in range(0, len(prev_board)):
             for j in range(0, len(prev_board)):
                 if prev_board[i][j] != new_board[i][j]:
-                    moves[new_board[i][j]] = [i, j]
+                    if new_board[i][j] not in moves:
+                        moves[new_board[i][j]] = [[i, j]]
+                    else:
+                        moves[new_board[i][j]].append([i, j])
         
         # verify all new letters in racks
         for move in moves.keys():
@@ -257,9 +260,10 @@ class AI:
     def letters_to_rack_idx(self, moves):
         positional_moves = {}
         for letter, board_moves in moves.items():
-            rack_idx = self.rack.index(letter)
-            self.rack[rack_idx] = None  # mark letter as taken
-            positional_moves[rack_idx] = board_moves
+            for board_move in board_moves:
+                rack_idx = self.rack.index(letter)
+                self.rack[rack_idx] = None  # mark letter as taken
+                positional_moves[rack_idx] = board_move
         return positional_moves
 
 
@@ -270,3 +274,7 @@ class AI:
             sleep(.05)
         self.rack[rack_idx] = curr_letter
         return True
+
+
+    # now check rack before turn
+    # def update_rack(camera):
