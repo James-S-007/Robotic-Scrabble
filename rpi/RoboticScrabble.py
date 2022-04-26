@@ -26,8 +26,18 @@ curr_player = randint(0, 1)  # Human: 0, AI: 1, to toggle player  1 - curr_playe
 
 # Gui button callbacks
 def end_turn_cb():
-    global curr_player
-    curr_player = 1  # make AI player's turn
+    global board
+    global ai
+    global gantry
+    board.import_board(os.path.join(os.path.dirname(__file__), 'scrabble', 'scrabble_game_board.csv'))  # update board
+    ai.import_rack(os.path.join(os.path.dirname(__file__), 'scrabble', 'scrabble_ai_rack.csv'))  # update rack
+        # ai.update_board(board, new_board)
+        # ai.update_rack(new_rack)
+    ai_move = ai.generate_move(board, game_rules)
+    print(f'AI Move: {ai_move}')
+    gantry.play_letters(ai, ai_move['moves'])
+        
+
 
 def end_game_cb():
     global curr_player
@@ -38,7 +48,12 @@ root=tk.Tk()
 app=FullScreenApp(root, button_endturn_cb=end_turn_cb, button_endgame_cb=end_game_cb)
 root.mainloop()
 
+# board.import_board(os.path.join(os.path.dirname(__file__), 'scrabble', 'scrabble_game_board.csv'))  # update board
+# ai.import_rack(os.path.join(os.path.dirname(__file__), 'scrabble', 'scrabble_ai_rack.csv'))  # update rack
+# ai_move = ai.generate_move(board, game_rules)
 
+
+'''
 print(f'Starting player: {"Human" if 0 else "AI"}')
 while True:
     if curr_player == 0:  # Human turn
@@ -69,3 +84,4 @@ while True:
     # curr_player = 1 - curr_player  # toggle current player after turn
         
 # TODO(James): Some results output?
+'''
