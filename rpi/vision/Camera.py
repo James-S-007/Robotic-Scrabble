@@ -4,6 +4,8 @@ import numpy as np
 
 import os.path
 from time import sleep
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from vision.scrabbleCV import getGameBoards
 
@@ -58,12 +60,14 @@ class Camera:
             if not ret:
                 print('Camera disconnected, exiting...')
                 return False
+            dst = cv2.undistort(image, self.mtx, self.dist, None, self.new_camera_mtx)
+            dst = dst[self.y:self.y+self.h, self.x:self.x+self.w]  # crop
             if show_img:
-                dst = cv2.undistort(image, self.mtx, self.dist, None, self.new_camera_mtx)
-                dst = dst[self.y:self.y+self.h, self.x:self.x+self.w]  # crop
-                cv2.imshow('Imagetest', dst)
+                # cv2.imshow('Imagetest', dst)
+                cv2.imshow('Imagetest', image)
             k = cv2.waitKey(1)
             if k == ord(' '):
+                # cv2.imwrite(os.path.join(os.path.dirname(__file__), f'cv2_cap{cap_num}.jpg'), image)
                 cv2.imwrite(os.path.join(os.path.dirname(__file__), f'cv2_cap{cap_num}.jpg'), dst)
                 cap_num += 1
             if k == ord('q'):
@@ -78,6 +82,8 @@ class Camera:
         dst = dst[self.y:self.y+self.h, self.x:self.x+self.w]  # crop
         img_path = os.path.join(os.path.dirname(__file__), CAM_FILE_NAME)
         cv2.imwrite(img_path, dst)
+        # cv2.imwrite(img_path, image)
+        
 
     def output_rack_and_board(self):
         self.save_image()
@@ -86,5 +92,5 @@ class Camera:
         
     
 if __name__ == '__main__':
-    cam = Camera(0)
+    cam = Camera(1)
     cam.stream_image(show_img=True)
