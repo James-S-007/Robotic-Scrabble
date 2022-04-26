@@ -118,5 +118,6 @@ if __name__ == '__main__':
     # ai.rack[2] = None
     # ai.rack[3] = None
     # ai.rack[4] = None
-    gantry.distribute_letters(ai, ai.rack.count(None))
+    # gantry.distribute_letters(ai, ai.rack.count(None))
+    print('Done...')
     
