@@ -1,7 +1,7 @@
 from tkinter import *
 
 class FullScreenApp(object):
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, button_cb):
         self.master=master
         pad=3
         self._geom='200x200+0+0'
@@ -16,7 +16,7 @@ class FullScreenApp(object):
         Grid.rowconfigure(root,1,weight=1)
         Grid.columnconfigure(root,1,weight=1)
 
-        endButton = Button(text="End Turn", state=NORMAL, font=('Helvetica', '20'))  
+        endButton = Button(text="End Turn", state=NORMAL, font=('Helvetica', '20'), command=button_cb)  
         endButton.grid(row=0,column=1,sticky="NSEW", padx=(20, 20), pady=(20, 20))        
     def toggle_geom(self,event):
         geom=self.master.winfo_geometry()
@@ -24,7 +24,11 @@ class FullScreenApp(object):
         self.master.geometry(self._geom)
         self._geom=geom
 
-root=Tk()
-app=FullScreenApp(root)
+def test_button():
+    print('Hi!')
 
-root.mainloop()
+
+if __name__ == '__main__':
+    root=Tk()
+    app=FullScreenApp(root, test_button)
+    root.mainloop()
