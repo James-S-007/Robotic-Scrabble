@@ -2,6 +2,7 @@
 
 '''
 from random import randint
+from time import sleep
 
 from Grbl.GrblStream import GrblStream
 from Human import Human
@@ -21,10 +22,10 @@ from scrabble.GameRules import GameRules
 class Gantry:
     def __init__(self, board, human_rack, ai_rack):
         # pin setup on RPi & Serial connection w/ Arduino
-        self.offsets = {'board': (5, 5), 'ai_rack': (23, 9), 'ai_cam': (18, 15), 'human_rack': (1, 9), 'storage1': (5, 1), 'storage2': (5, 22)}
+        self.offsets = {'board': (4, 4), 'ai_rack': (20, 8), 'ai_cam': (18, 15), 'human_rack': (2, 8), 'storage1': (4, 1), 'storage2': (4, 20)}
         self.in2mm = 25.4
-        self.storage1 = Storage(rows=15, cols=1)
-        self.storage2 = Storage(rows=15, cols=1)
+        self.storage1 = Storage(rows=15, cols=2)
+        self.storage2 = Storage(rows=15, cols=2)
         self.planner = PathPlanner(board, human_rack, ai_rack, self.storage1, self.storage2, self.offsets)
         self.grbl_stream = GrblStream(COM_PORT)
 
@@ -42,6 +43,7 @@ class Gantry:
         print(f'Absolute Space Moves: {absolute_moves}')
         self.grbl_stream.gen_and_stream(absolute_moves)
         self.planner.update_global_grid()
+        sleep(16)
 
 
     def grid_pos_to_absolute_pos(self, grid_moves):
@@ -102,7 +104,7 @@ if __name__ == '__main__':
     board.import_board(os.path.join(os.path.dirname(__file__), 'scrabble', 'board.csv'))
     human_rack = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
     ai = AI()
-    ai.rack = ['m', 'i', 'e', 'h', 'k', 'j', 'e']
+    ai.rack = ['i', 't', 'r', 't', 'f', 'e' 's']
     game_rules = GameRules(dictionary=os.path.join(os.path.dirname(__file__), 'scrabble', 'dictionary.txt'))
     gantry = Gantry(board, human_rack, ai.rack)
     print('Current Grid')
@@ -111,5 +113,10 @@ if __name__ == '__main__':
     print('AI Move')
     pprint(ai_move)
     gantry.play_letters(ai, ai_move['moves'])
+    # ai.rack[0] = None
+    # ai.rack[1] = None
+    # ai.rack[2] = None
+    # ai.rack[3] = None
+    # ai.rack[4] = None
     gantry.distribute_letters(ai, ai.rack.count(None))
     
