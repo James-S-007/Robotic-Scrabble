@@ -1,4 +1,4 @@
-from tkinter import *
+import tkinter as tk
 
 class FullScreenApp(object):
     def __init__(self, master, button_cb):
@@ -10,14 +10,15 @@ class FullScreenApp(object):
         master.bind('<Escape>',self.toggle_geom) 
 
         # Specify Grid
-        Grid.rowconfigure(root,0,weight=1)
-        Grid.columnconfigure(root,0,weight=1)
+        tk.Grid.rowconfigure(root,0,weight=1)
+        tk.Grid.columnconfigure(root,0,weight=1)
 
-        Grid.rowconfigure(root,1,weight=1)
-        Grid.columnconfigure(root,1,weight=1)
+        tk.Grid.rowconfigure(root,1,weight=1)
+        tk.Grid.columnconfigure(root,1,weight=1)
 
-        endButton = Button(text="End Turn", state=NORMAL, font=('Helvetica', '20'), command=button_cb)  
+        endButton = tk.Button(text="End Turn", state=tk.NORMAL, font=('Helvetica', '20'), command=button_cb)  
         endButton.grid(row=0,column=1,sticky="NSEW", padx=(20, 20), pady=(20, 20))        
+        
     def toggle_geom(self,event):
         geom=self.master.winfo_geometry()
         print(geom,self._geom)
@@ -29,6 +30,6 @@ def test_button():
 
 
 if __name__ == '__main__':
-    root=Tk()
+    root=tk.Tk()
     app=FullScreenApp(root, test_button)
     root.mainloop()
