@@ -152,7 +152,7 @@ if __name__ == "__main__":
 
 
     # Load model from https://github.com/shivamgupta7/OCR-Handwriting-Recognition
-    model = tf.keras.models.load_model("/home/ANT.AMAZON.COM/jacrande/Documents/Code/OCR-Handwriting-Recognition/handwriting.model")
+    model = tf.keras.models.load_model(os.path.dirname(os.path.realpath(__file__)) + '/model/handwriting.model')
 
     # define the list of label names
     labelNames = "0123456789"
