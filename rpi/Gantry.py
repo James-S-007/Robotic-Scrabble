@@ -104,7 +104,7 @@ if __name__ == '__main__':
     board.import_board(os.path.join(os.path.dirname(__file__), 'scrabble', 'board.csv'))
     human_rack = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
     ai = AI()
-    ai.rack = ['i', 't', 'r', 't', 'f', 'e' 's']
+    ai.rack = ['o', 'h', 'e', 'r', 'l', 'm' 'c']
     game_rules = GameRules(dictionary=os.path.join(os.path.dirname(__file__), 'scrabble', 'dictionary.txt'))
     gantry = Gantry(board, human_rack, ai.rack)
     print('Current Grid')
