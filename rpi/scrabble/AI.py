@@ -209,7 +209,7 @@ class AI:
 
         columnMove = self.evaluate_moves(globalMoves)
         word_made = ""
-        if len(rowMove[0]) > len(columnMove[0]):
+        if not columnMove or len(rowMove[0]) > len(columnMove[0]):
             board = self.transpose(board)
             self.make_word(board, rowMove)
             word_made = rowMove[0]
@@ -291,6 +291,7 @@ class AI:
 
     def import_rack(self, file):
         self.rack = list(csv.reader(open(file)))
+        self.rack = self.rack[0]
         for i in range(0, len(self.rack)):
             if self.rack[i] == '-':
                 self.rack[i] = None

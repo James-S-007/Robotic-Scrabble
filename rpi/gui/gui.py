@@ -11,13 +11,12 @@ class FullScreenApp(object):
 
         master.config(bg='#003057')
         # Specify Grid
-        tk.Grid.rowconfigure(root,0,weight=1)
-        tk.Grid.columnconfigure(root,0,weight=1)
+        tk.Grid.rowconfigure(self.master,0,weight=1)
+        tk.Grid.columnconfigure(self.master,0,weight=1)
 
-        #Grid.rowconfigure(root,1,weight=1)
-        tk.Grid.columnconfigure(root,1,weight=1)
-
-        tk.Grid.columnconfigure(root,2,weight=1)
+        #Grid.rowconfigure(self.master,1,weight=1)
+        tk.Grid.columnconfigure(self.master,1,weight=1)
+        tk.Grid.columnconfigure(self.master,2,weight=1)
 
         endturn_button = tk.Button(text="End Turn", state=tk.NORMAL, font=('Courier', '20', 'bold'), bg = '#B3A369',command = button_endturn_cb)  
         endturn_button.grid(row=0,column=0,sticky="NSEW", padx=(20, 20), pady=(20, 20))      
@@ -25,7 +24,7 @@ class FullScreenApp(object):
         endgame_button = tk.Button(text="End Game", state=tk.NORMAL, font= ('Courier', '20', 'bold'), bg = '#B3A369', command = button_endgame_cb)
         endgame_button.grid(row=0, column=2, sticky="NSEW", padx=(20,20), pady=(20,20))  
 
-        title = tk.Label(root, text = "Robotic Scrabble")
+        title = tk.Label(self.master, text = "Robotic Scrabble")
         title.config(font =("Courier", 28, 'bold'), bg='#003057', fg = 'white')
         title.grid(row=0, column=1, sticky="NSEW", padx=(5,5), pady=(5,5))
 
