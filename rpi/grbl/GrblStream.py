@@ -53,7 +53,7 @@ class GrblStream:
                 # print(f'Sending: {l}')
                 self.s.write(str.encode(l + '\n')) # Send g-code block to grbl
                 grbl_out = self.s.readline() # Wait for grbl response with carriage return
-                print (f'Response: {grbl_out.strip()}')
+                # print (f'Response: {grbl_out.strip()}')
 
     def home(self):
         with open(self.gcode_path, 'w') as f:
