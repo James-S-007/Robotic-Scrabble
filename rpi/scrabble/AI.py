@@ -11,6 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from vision import Camera
 
+import csv
 import random
 import string
 from time import sleep
@@ -20,7 +21,7 @@ class AI:
     def __init__(self, cam_num=2):
         self.rack=[None]*7
         self.score = 0
-        self.camera = Camera.Camera(cam_num)
+        # self.camera = Camera.Camera(cam_num)
 
     def get_left_limit(self, board, row, column):
         if column == 0:
@@ -287,6 +288,13 @@ class AI:
         for i in range(0, len(self.rack)):
             if self.rack[i] == None:
                 self.rack[i] = new_rack[i]
+
+    def import_rack(self, file):
+        self.rack = list(csv.reader(open(file)))
+        for i in range(0, len(self.rack)):
+            if self.rack[i] == '-':
+                self.rack[i] = None
+                
 
     # now check rack before turn
     # def update_rack(camera):
