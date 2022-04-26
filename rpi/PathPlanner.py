@@ -146,6 +146,9 @@ class PathPlanner():
                 # if we hit this point return the path such as it is
                 # it will not contain the destination
                 print("giving up on pathfinding too many iterations")
+                self.grid[start[0]][start[1]] = initial_start_state
+                self.grid[end[0]][end[1]] = initial_end_state
+
                 return self.return_path(current_node)       
             
             # Get the current node
@@ -154,6 +157,8 @@ class PathPlanner():
 
             # Found the goal
             if current_node == end_node:
+                self.grid[start[0]][start[1]] = initial_start_state
+                self.grid[end[0]][end[1]] = initial_end_state
                 return self.return_path(current_node)
 
             # Generate children
