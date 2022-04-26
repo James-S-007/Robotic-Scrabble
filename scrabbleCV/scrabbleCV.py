@@ -90,15 +90,14 @@ def rotate_image(image, angle):
   result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
   return result
 
-
-if __name__ == "__main__":
-    image = cv2.imread( os.path.dirname(os.path.realpath(__file__)) + '/images/highResScrabble.jpg')
+def getGameBoards(image):
+    #image = cv2.imread(os.path.dirname(os.path.realpath(__file__)) + '/images/glareScrabble.jpg')
     
     # Rotate image
     image = rotate_image(image,92)
 
-    cv2.imshow("Gameboard Image",image)
-    cv2.waitKey(0)
+    #cv2.imshow("Gameboard Image",image)
+    #cv2.waitKey(0)
 
     # find the board in the image and then
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -110,9 +109,9 @@ if __name__ == "__main__":
     #cv2.imshow("Gray Game board Image",thresh)
     #cv2.waitKey(0)
 
-    mainBoardCnt = np.array([[[92,487]],[[646,477]],[[665,129]],[[88,134]]])
+    mainBoardCnt = np.array([[[69,513]],[[646,499]],[[652,146]],[[75,154]]])
 
-    playerCnt = np.array([[[241,530]],[[500,528]],[[500,506]],[[239,511]]])
+    playerCnt = np.array([[[226,537]],[[225,559]],[[493,553]],[[493,531]]])
 
     if False:
         # draw the contour of the mainBoard on the image and then display
@@ -122,7 +121,7 @@ if __name__ == "__main__":
         cv2.imshow("mainBoard Outline", output)
         cv2.waitKey(0)
 
-    if True:
+    if False:
         # Draw contour of the playerTiles on the image and display it
         output = image.copy()
         cv2.drawContours(output, [playerCnt], -1, (0, 255, 0), 2)
@@ -143,7 +142,7 @@ if __name__ == "__main__":
         cv2.imshow("Cropped Mainboard",mainBoardImage)
         cv2.waitKey(0)
     
-    if True:
+    if False:
         cv2.imshow("Cropped Player Board",playerBoard)
         cv2.waitKey(0)
 
@@ -186,39 +185,26 @@ if __name__ == "__main__":
                 # cell for classification
                 roi = cv2.resize(letter, (32, 32))
                 roi = roi.astype("float") / 255.0
-                cv2.imshow("letter",roi)
-                cv2.waitKey(0)
+                #cv2.imshow("letter",roi)
+                #cv2.waitKey(0)
                 roi = tf.keras.utils.img_to_array(roi)
                 roi = np.expand_dims(roi, axis=0)
                 # classify the letter and update the Scrabble board with the
                 # prediction
                 pred = model.predict(roi)
-                #print(pred)
-                #indices = np.argsort(pred, axis=-1, kind='quicksort', order=None)
-                #print(indices)
-                #i = indices[0][0]
-                #prob = pred[0][0]
                 i = np.argmax(pred)
-                print("Index",i)
-                indices = np.argsort(pred, axis=-1, kind='quicksort', order=None)
-                print(indices)
-                label = labelNames[i]
 
-                # Make sure we aren't predicting a number
-                """ j = 0
-                w = -2
-                while (j < 10):
-                    if(label == numbers[j]):
-                        print("Number was predicted, using different prediction")
-                        j = 0
-                        i = indices[0][w]
-                        #prob = pred[w]
-                        label = labelNames[w]
-                        w = w - 1
-                    else:
-                        j = j + 1 """
+                label = labelNames[i]
+                if label == '0':
+                    label = 'O'
+                elif label == '7':
+                    label = 'I'
+                elif label == '6':
+                    label = 'C'
+                elif label == '8':
+                    label = 'S'
                 
-                print("Prediction: ",label)
+                #print("Prediction: ",label)
                 #print("Probability: ",prob)
                 mainBoard[y, x] = label
             else:
@@ -228,7 +214,7 @@ if __name__ == "__main__":
     stepY = mainBoardImage.shape[0] / 15.0
 
     # Classify Letters in Player board
-    """ for x in range(0, 7): 
+    for x in range(0, 7): 
         # current cell 
         startX = int(x * stepX)
         startY = 0
@@ -239,8 +225,8 @@ if __name__ == "__main__":
         # extract the letter from the cell
         cell = playerBoard[startY:endY, startX:endX]
 
-        cv2.imshow("Cell",cell )
-        cv2.waitKey(0)
+        #cv2.imshow("Cell",cell )
+        #cv2.waitKey(0)
         letter = extract_letter(cell, False)
 
         # verify that the letter is not empty
@@ -249,40 +235,35 @@ if __name__ == "__main__":
             # cell for classification
             roi = cv2.resize(letter, (32, 32))
             roi = roi.astype("float") / 255.0
-            cv2.imshow("letter",roi)
-            cv2.waitKey(0)
+            #cv2.imshow("letter",roi)
+            #cv2.waitKey(0)
             roi = tf.keras.utils.img_to_array(roi)
             roi = np.expand_dims(roi, axis=0)
             # classify the letter and update the Scrabble board with the
             # prediction
             pred = model.predict(roi)
-            np.argsort(pred, axis=-1, kind='quicksort', order=None)
-            i = pred[0][0]
-            #prob = pred[0][0]
+            i = np.argmax(pred)
             label = labelNames[i]
             
             # Make sure we aren't predicting a number
-            j = 0
-            w = 1
-            while (j < 10):
-                if(label == numbers[j]):
-                    print("Number was predicted, using different prediction")
-                    j = 0
-                    w = w + 1
-                    i = pred[0][w]
-                    prob = pred[w]
-                    label = labelNames[w]
-                else:
-                    j = j + 1
+            if label == '0':
+                label = 'O'
+            elif label == '7':
+                label = 'I'
+            elif label == '6':
+                label = 'C'
+            elif label == '8':
+                label = 'S'
             
 
-            print("Prediction: ",label)
+            #print("Prediction: ",label)
             ##print("Probability: ",prob)
             playerTiles[0,x] = label
         else:
-            playerTiles[0,x] = '-' """
+            playerTiles[0,x] = '-'
         
-    print(mainBoard)
+    #print(mainBoard)
     #print(playerTiles)
+    return mainBoard, playerTiles
 
 
