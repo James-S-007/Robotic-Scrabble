@@ -1,11 +1,16 @@
 # Based on Sudoko tutorial: https://pyimagesearch.com/2020/08/10/opencv-sudoku-solver-and-ocr/#pyis-cta-modal
 
 # import the necessary packages
+from pydoc import doc
 from perspective import four_point_transform
 from skimage.segmentation import clear_border 
 import numpy as np
 import cv2
 import os
+import tensorflow as tf
+from tensorflow.keras.datasets import mnist
+import pytesseract
+from PIL import Image
 
 debug = True
 
@@ -32,70 +37,6 @@ def grab_contours(cnts):
     # return the actual contours array
     return cnts
 
-
-def find_board(image, debug=False):
-
-    # convert the image to grayscale and blur it slightly
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    blurred = cv2.GaussianBlur(gray, (7, 7), 3)
-
-    # apply adaptive thresholding and then invert the threshold map
-    thresh = cv2.adaptiveThreshold(blurred, 255,
-        cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-    thresh = cv2.bitwise_not(thresh)
-
-    # check to see if we are visualizing each step of the image
-    # processing pipeline (in this case, thresholding)
-    if debug:
-        cv2.imshow("board Thresh", thresh)
-        cv2.waitKey(0)
-
-    # find contours in the thresholded image and sort them by size in
-    # descending order
-    cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-        cv2.CHAIN_APPROX_SIMPLE)
-    cnts = grab_contours(cnts)
-    cnts = sorted(cnts, key=cv2.contourArea, reverse=True)
-    # initialize a contour that corresponds to the board outline
-    boardCnt = None
-    # loop over the contours
-    for c in cnts:
-        # approximate the contour
-        peri = cv2.arcLength(c, True)
-        approx = cv2.approxPolyDP(c, 0.02 * peri, True)
-        # if our approximated contour has four points, then we can
-        # assume we have found the outline of the board
-        if len(approx) == 4:
-            boardCnt = approx
-            break
-
-    # if the board contour is empty then our script could not find
-    # the outline of the Scrabble board so raise an error
-    if boardCnt is None:
-        raise Exception(("Could not find Scrabble Board outline. "
-            "Try debugging your thresholding and contour steps."))
-    # check to see if we are visualizing the outline of the detected
-    # Sudoku board
-    if debug:
-        # draw the contour of the board on the image and then display
-        # it to our screen for visualization/debugging purposes
-        output = image.copy()
-        cv2.drawContours(output, [boardCnt], -1, (0, 255, 0), 2)
-        cv2.imshow("board Outline", output)
-        cv2.waitKey(0)
-
-    # apply a four point perspective transform to both the original
-    # image and grayscale image to obtain a top-down bird's eye view
-    # of the board
-    board = four_point_transform(image, boardCnt.reshape(4, 2))
-    warped = four_point_transform(gray, boardCnt.reshape(4, 2))
-    # check to see if we are visualizing the perspective transform
-    if debug:
-        # show the output warped image (again, for debugging purposes)
-        cv2.imshow("board Transform", board)
-        cv2.waitKey(0)  
-    # return a 2-tuple of board in both RGB and grayscale
-    return (board, warped)
 
 def extract_letter(cell, debug=False):
 
@@ -132,7 +73,7 @@ def extract_letter(cell, debug=False):
 
     # if less than 3% of the mask is filled then we are looking at
     # noise and can safely ignore the contour
-    if percentFilled < 0.03:
+    if percentFilled < 0.05:
         return None
     # apply the mask to the thresholded cell
     letter = cv2.bitwise_and(thresh, thresh, mask=mask)
@@ -143,58 +84,205 @@ def extract_letter(cell, debug=False):
     # return the letter to the calling function
     return letter
 
+def rotate_image(image, angle):
+  image_center = tuple(np.array(image.shape[1::-1]) / 2)
+  rot_mat = cv2.getRotationMatrix2D(image_center, angle, 1.0)
+  result = cv2.warpAffine(image, rot_mat, image.shape[1::-1], flags=cv2.INTER_LINEAR)
+  return result
+
+
 if __name__ == "__main__":
-    image = cv2.imread( os.path.dirname(os.path.realpath(__file__)) + '/images/scrabbleBoardImage.jpg')
+    image = cv2.imread( os.path.dirname(os.path.realpath(__file__)) + '/images/highResScrabble.jpg')
+    
+    # Rotate image
+    image = rotate_image(image,92)
+
+    cv2.imshow("Gameboard Image",image)
+    cv2.waitKey(0)
 
     # find the board in the image and then
-    (boardImage, warped) = find_board(image, False)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # apply adaptive thresholding and then invert the threshold map
+    thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    thresh = cv2.bitwise_not(thresh)
+
+    #cv2.imshow("Gray Game board Image",thresh)
+    #cv2.waitKey(0)
+
+    mainBoardCnt = np.array([[[92,487]],[[646,477]],[[665,129]],[[88,134]]])
+
+    playerCnt = np.array([[[241,530]],[[500,528]],[[500,506]],[[239,511]]])
+
+    if False:
+        # draw the contour of the mainBoard on the image and then display
+        # it to our screen for visualization/debugging purposes
+        output = image.copy()
+        cv2.drawContours(output, [mainBoardCnt], -1, (0, 255, 0), 2)
+        cv2.imshow("mainBoard Outline", output)
+        cv2.waitKey(0)
+
+    if True:
+        # Draw contour of the playerTiles on the image and display it
+        output = image.copy()
+        cv2.drawContours(output, [playerCnt], -1, (0, 255, 0), 2)
+        cv2.imshow("Player Tiles Outline", output)
+        cv2.waitKey(0)
+
+    mainBoardImage = four_point_transform(gray, mainBoardCnt.reshape(4, 2))
+
+    playerBoard = four_point_transform(gray, playerCnt.reshape(4, 2))
     
-    # initialize our 5x5 Scrabble board
-    board = np.zeros((5, 6), dtype="int")
+    # initialize our 15x15 Scrabble board
+    mainBoard = np.zeros((15, 15), dtype=str)
 
-    cv2.imshow("Cropped",warped)
-    cv2.waitKey(0)
-    stepX = warped.shape[1] // 5
-    stepY = warped.shape[0] // 5
+    # initialize our 1x7 player board
+    playerTiles = np.zeros((1,7),dtype=str)
 
-    # initialize a list to store the (x, y)-coordinates of each cell
-    # location
-    cellLocs = []
+    if False:
+        cv2.imshow("Cropped Mainboard",mainBoardImage)
+        cv2.waitKey(0)
+    
+    if True:
+        cv2.imshow("Cropped Player Board",playerBoard)
+        cv2.waitKey(0)
 
+    stepX = mainBoardImage.shape[1] / 15.0
+    stepY = mainBoardImage.shape[0] / 15.0
+
+
+    # Load model from https://github.com/shivamgupta7/OCR-Handwriting-Recognition
+    model = tf.keras.models.load_model(os.path.dirname(os.path.realpath(__file__)) + '/model/handwriting.model')
+
+    # define the list of label names
+    labelNames = "0123456789"
+    labelNames += "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    labelNames = [l for l in labelNames]
+
+    numbers = "0123456789"
+    numbers = [n for n in labelNames]
+
+    i = 0
     # loop over the grid locations
-    for y in range(0, 5):
-        # initialize the current list of cell locations
-        row = []
-        for x in range(0, 5): 
+    for y in range(0, 15):
+        for x in range(0, 15): 
             # current cell 
-            startX = x * stepX
-            startY = y * stepY
-            endX = (x + 1) * stepX
-            endY = (y + 1) * stepY
-            # add the (x, y)-coordinates to our cell locations list
-            row.append((startX, startY, endX, endY))
+            startX = int(x * stepX)
+            startY = int(y * stepY)
+            endX = int((x + 1) * stepX)
+            endY = int((y + 1) * stepY)
 
             # crop the cell from the warped transform image and then
             # extract the letter from the cell
-            cell = warped[startY:endY, startX:endX]
-            cv2.imshow("cell",cell )
-            cv2.waitKey(0)
+            cell = mainBoardImage[startY:endY, startX:endX]
+
+            #cv2.imshow("Cell",cell )
+            #cv2.waitKey(0)
             letter = extract_letter(cell, False)
+
             # verify that the letter is not empty
             if letter is not None:
                 # resize the cell to 28x28 pixels and then prepare the
                 # cell for classification
-                roi = cv2.resize(letter, (28, 28))
+                roi = cv2.resize(letter, (32, 32))
                 roi = roi.astype("float") / 255.0
                 cv2.imshow("letter",roi)
                 cv2.waitKey(0)
-                #roi = img_to_array(roi)
-                #roi = np.expand_dims(roi, axis=0)
-                # classify the letter and update the Sudoku board with the
+                roi = tf.keras.utils.img_to_array(roi)
+                roi = np.expand_dims(roi, axis=0)
+                # classify the letter and update the Scrabble board with the
                 # prediction
-                #pred = model.predict(roi).argmax(axis=1)[0] # TODO: Predict Letter...
-                #board[y, x] = pred
-        # add the row to our cell locations
-        #cellLocs.append(row)
+                pred = model.predict(roi)
+                #print(pred)
+                #indices = np.argsort(pred, axis=-1, kind='quicksort', order=None)
+                #print(indices)
+                #i = indices[0][0]
+                #prob = pred[0][0]
+                i = np.argmax(pred)
+                print("Index",i)
+                indices = np.argsort(pred, axis=-1, kind='quicksort', order=None)
+                print(indices)
+                label = labelNames[i]
+
+                # Make sure we aren't predicting a number
+                """ j = 0
+                w = -2
+                while (j < 10):
+                    if(label == numbers[j]):
+                        print("Number was predicted, using different prediction")
+                        j = 0
+                        i = indices[0][w]
+                        #prob = pred[w]
+                        label = labelNames[w]
+                        w = w - 1
+                    else:
+                        j = j + 1 """
+                
+                print("Prediction: ",label)
+                #print("Probability: ",prob)
+                mainBoard[y, x] = label
+            else:
+                mainBoard[y,x] = '-'
+
+    stepX = playerBoard.shape[1] / 7.0
+    stepY = mainBoardImage.shape[0] / 15.0
+
+    # Classify Letters in Player board
+    """ for x in range(0, 7): 
+        # current cell 
+        startX = int(x * stepX)
+        startY = 0
+        endX = int((x + 1) * stepX)  
+        endY = int(stepY)
+
+        # crop the cell from the warped transform image and then
+        # extract the letter from the cell
+        cell = playerBoard[startY:endY, startX:endX]
+
+        cv2.imshow("Cell",cell )
+        cv2.waitKey(0)
+        letter = extract_letter(cell, False)
+
+        # verify that the letter is not empty
+        if letter is not None:
+            # resize the cell to 28x28 pixels and then prepare the
+            # cell for classification
+            roi = cv2.resize(letter, (32, 32))
+            roi = roi.astype("float") / 255.0
+            cv2.imshow("letter",roi)
+            cv2.waitKey(0)
+            roi = tf.keras.utils.img_to_array(roi)
+            roi = np.expand_dims(roi, axis=0)
+            # classify the letter and update the Scrabble board with the
+            # prediction
+            pred = model.predict(roi)
+            np.argsort(pred, axis=-1, kind='quicksort', order=None)
+            i = pred[0][0]
+            #prob = pred[0][0]
+            label = labelNames[i]
+            
+            # Make sure we aren't predicting a number
+            j = 0
+            w = 1
+            while (j < 10):
+                if(label == numbers[j]):
+                    print("Number was predicted, using different prediction")
+                    j = 0
+                    w = w + 1
+                    i = pred[0][w]
+                    prob = pred[w]
+                    label = labelNames[w]
+                else:
+                    j = j + 1
+            
+
+            print("Prediction: ",label)
+            ##print("Probability: ",prob)
+            playerTiles[0,x] = label
+        else:
+            playerTiles[0,x] = '-' """
+        
+    print(mainBoard)
+    #print(playerTiles)
 
 
