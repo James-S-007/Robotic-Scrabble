@@ -181,6 +181,8 @@ class AI:
     def make_best_word(self, board, dictionary):
         # row moves
         temp_rack = self.rack.copy()  # will be modified throughout, need copy to pass
+        while None in temp_rack:
+            temp_rack.remove(None)
         anchors = self.get_anchors(board, dictionary)
         cross_checks = self.get_cross_checks(board, dictionary)
         globalMoves = []
@@ -275,6 +277,16 @@ class AI:
         self.rack[rack_idx] = curr_letter
         return True
 
+    def update_board(self, old_board, new_board):
+        for i in range(0, len(old_board)):
+            for j in range(0, len(old_board[0])):
+                if new_board[i][j] != '-' and old_board[i][j] == '-':
+                    old_board[i][j] = new_board[i][j]
+
+    def update_rack(self, new_rack):
+        for i in range(0, len(self.rack)):
+            if self.rack[i] == None:
+                self.rack[i] = new_rack[i]
 
     # now check rack before turn
     # def update_rack(camera):
