@@ -5,12 +5,16 @@ import numpy as np
 import os.path
 from time import sleep
 
+from vision.scrabbleCV import getGameBoards
+
 # TODO(James):
     # https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html
     # https://github.com/tizianofiorenzani/how_do_drones_work/blob/master/opencv/cameracalib.py
 
 # To modify camera parameters: v4l2-ctl -d /dev/video0 --list-ctrls-menus
 # Camera height above board: 26in
+
+CAM_FILE_NAME = 'robotic_scrabble_game_util.jpg'
 
 class Camera:
     def __init__(self, cam_num):
@@ -47,7 +51,7 @@ class Camera:
         ret, frame = self.cap.read()
         return self.decode(frame)
 
-    def capture_image(self, show_img=False):
+    def stream_image(self, show_img=False):
         cap_num = 0
         while True:
             ret, image = self.cap.read()
@@ -64,7 +68,23 @@ class Camera:
                 cap_num += 1
             if k == ord('q'):
                     break
+
+    def save_image(self):
+        ret, image = self.cap.read()
+        if not ret:
+            print('Camera disconnected, exiting...')
+            return None
+        dst = cv2.undistort(image, self.mtx, self.dist, None, self.new_camera_mtx)
+        dst = dst[self.y:self.y+self.h, self.x:self.x+self.w]  # crop
+        img_path = os.path.join(os.path.dirname(__file__), CAM_FILE_NAME)
+        cv2.imwrite(img_path, dst)
+
+    def output_rack_and_board(self):
+        self.save_image()
+        return getGameBoards(os.path.join(os.path.dirname(__file__), CAM_FILE_NAME))
+
+        
     
 if __name__ == '__main__':
     cam = Camera(0)
-    cam.capture_image(show_img=True)
+    cam.stream_image(show_img=True)
